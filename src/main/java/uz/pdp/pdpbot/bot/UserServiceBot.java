@@ -139,6 +139,23 @@ public class UserServiceBot {
         inlineKeyboardMarkup.setKeyboard(Collections.singletonList(keyboardRows));
         return inlineKeyboardMarkup;
     }
-
+    public ReplyKeyboardMarkup startManager() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+        KeyboardRow keyboardRow = new KeyboardRow();
+        KeyboardRow keyboardRow1 = new KeyboardRow();
+        KeyboardRow keyboardRow2 = new KeyboardRow();
+        KeyboardRow keyboardRow3 = new KeyboardRow();
+        keyboardRow.add(Constant.ADD_QUESTION);
+        keyboardRow.add(Constant.LIST_QUESTION);
+        keyboardRow1.add(Constant.DEL_QUESTION);
+        keyboardRow1.add(Constant.GET_RESULT);
+        keyboardRows.add(keyboardRow);
+        keyboardRows.add(keyboardRow1);
+//        keyboardRows.add(keyboardRow2);
+//        keyboardRows.add(keyboardRow3);
+        replyKeyboardMarkup.setKeyboard(keyboardRows);
+        return replyKeyboardMarkup;
+    }
 
 }

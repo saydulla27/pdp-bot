@@ -61,11 +61,7 @@ public class BaseBot extends TelegramLongPollingBot {
         String strDate = dateFormat.format(date);
         User client = null;
         User user = null;
-
-
         String delete = null;
-
-
         if (update.hasMessage()) {
             if (update.getMessage().hasText()) {
                 userChatId = update.getMessage().getChatId();
@@ -406,7 +402,7 @@ public class BaseBot extends TelegramLongPollingBot {
                         optionalUser.get().setFullName(ism + " " + familya);
                         userRepository.save(optionalUser.get());
                         userMessage = "Assalom aleykum  " + ism + " " + familya;
-                        execute(null, null);
+                        execute(userServiceBot.startManager(), null);
 
                     }
                     if (optionalUser.get().getRole().equals(Role.ROLE_STUDENT)) {

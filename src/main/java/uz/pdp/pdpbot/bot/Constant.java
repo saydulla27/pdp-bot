@@ -17,4 +17,8 @@ public interface Constant {
     String ADD_STUDENT = "O`quvchi  qoshish";
     String GET_GROUP = "Guruhlarni korish";
     String BACK_ADMIN = "okay";
+    String ADD_QUESTION = "Savol qoshish";
+    String DEL_QUESTION = "Savol ochirish";
+    String LIST_QUESTION = "Savollar ro`yhati";
+    String GET_RESULT = "Natijalar";
 }
