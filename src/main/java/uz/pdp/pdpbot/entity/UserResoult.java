@@ -17,16 +17,14 @@ public class UserResoult {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private int Baxo;
+    private String Ball;
     private String description;
-
+    private long buffer;
     @ManyToOne
     private Survey savol;
 
     @ManyToOne
     private User user;
-
-
 
 
 }

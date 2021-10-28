@@ -108,7 +108,6 @@ public class UserServiceBot {
         keyboardRow1.add(new KeyboardButton(Constant.BACK_M));
         keyboardRows.add(keyboardRow1);
 
-
         replyKeyboardMarkup.setKeyboard(keyboardRows);
         return replyKeyboardMarkup;
     }
@@ -123,22 +122,81 @@ public class UserServiceBot {
         return replyKeyboardMarkup;
     }
 
-    public InlineKeyboardMarkup savol() {
+    public InlineKeyboardMarkup fifeBall() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<InlineKeyboardButton> keyboardRows = new ArrayList<>();
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-        inlineKeyboardButton.setText("1").setCallbackData("1");
-        inlineKeyboardButton1.setText("2").setCallbackData("2");
-        inlineKeyboardButton2.setText("3").setCallbackData("3");
+        InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+        inlineKeyboardButton.setText(" 1 ").setCallbackData("1");
+        inlineKeyboardButton1.setText(" 2 ").setCallbackData("2");
+        inlineKeyboardButton2.setText(" 3 ").setCallbackData("3");
+        inlineKeyboardButton3.setText(" 4 ").setCallbackData("4");
+        inlineKeyboardButton4.setText(" 5 ").setCallbackData("5");
         keyboardRows.add(inlineKeyboardButton);
         keyboardRows.add(inlineKeyboardButton1);
         keyboardRows.add(inlineKeyboardButton2);
+        keyboardRows.add(inlineKeyboardButton3);
+        keyboardRows.add(inlineKeyboardButton4);
 
         inlineKeyboardMarkup.setKeyboard(Collections.singletonList(keyboardRows));
         return inlineKeyboardMarkup;
     }
+    public InlineKeyboardMarkup start_survey () {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<InlineKeyboardButton> keyboardRows = new ArrayList<>();
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+        inlineKeyboardButton.setText("Sorovnomadan o`tish").setCallbackData("sur");
+        keyboardRows.add(inlineKeyboardButton);
+
+        inlineKeyboardMarkup.setKeyboard(Collections.singletonList(keyboardRows));
+        return inlineKeyboardMarkup;
+    }
+    public InlineKeyboardMarkup teenBall() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<InlineKeyboardButton> keyboardRows = new ArrayList<>();
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton6 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton7 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton8 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton9 = new InlineKeyboardButton();
+        inlineKeyboardButton.setText(" 1 ").setCallbackData("1");
+        inlineKeyboardButton1.setText(" 2 ").setCallbackData("2");
+        inlineKeyboardButton2.setText(" 3 ").setCallbackData("3");
+        inlineKeyboardButton3.setText(" 4 ").setCallbackData("4");
+        inlineKeyboardButton4.setText(" 5 ").setCallbackData("5");
+        inlineKeyboardButton5.setText(" 6 ").setCallbackData("6");
+        inlineKeyboardButton6.setText(" 7 ").setCallbackData("7");
+        inlineKeyboardButton7.setText(" 8 ").setCallbackData("8");
+        inlineKeyboardButton8.setText(" 9 ").setCallbackData("9");
+        inlineKeyboardButton9.setText(" 10 ").setCallbackData("10");
+        keyboardRows.add(inlineKeyboardButton);
+        keyboardRows.add(inlineKeyboardButton1);
+        keyboardRows.add(inlineKeyboardButton2);
+        keyboardRows.add(inlineKeyboardButton3);
+        keyboardRows.add(inlineKeyboardButton4);
+        keyboardRows.add(inlineKeyboardButton5);
+        keyboardRows.add(inlineKeyboardButton6);
+        keyboardRows.add(inlineKeyboardButton7);
+        keyboardRows.add(inlineKeyboardButton8);
+        keyboardRows.add(inlineKeyboardButton9);
+
+        inlineKeyboardMarkup.setKeyboard(Collections.singletonList(keyboardRows));
+        return inlineKeyboardMarkup;
+    }
+
+
+
+
+
+
     public ReplyKeyboardMarkup startManager() {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
@@ -146,13 +204,14 @@ public class UserServiceBot {
         KeyboardRow keyboardRow1 = new KeyboardRow();
         KeyboardRow keyboardRow2 = new KeyboardRow();
         KeyboardRow keyboardRow3 = new KeyboardRow();
-        keyboardRow.add(Constant.ADD_QUESTION);
-        keyboardRow.add(Constant.LIST_QUESTION);
-        keyboardRow1.add(Constant.DEL_QUESTION);
-        keyboardRow1.add(Constant.GET_RESULT);
+        keyboardRow.add(Constant.GET_QUESTION);
+        keyboardRow1.add(Constant.ADD_QUESTION);
+        keyboardRow1.add(Constant.LIST_QUESTION);
+        keyboardRow2.add(Constant.DEL_QUESTION);
+        keyboardRow2.add(Constant.GET_RESULT);
         keyboardRows.add(keyboardRow);
         keyboardRows.add(keyboardRow1);
-//        keyboardRows.add(keyboardRow2);
+        keyboardRows.add(keyboardRow2);
 //        keyboardRows.add(keyboardRow3);
         replyKeyboardMarkup.setKeyboard(keyboardRows);
         return replyKeyboardMarkup;

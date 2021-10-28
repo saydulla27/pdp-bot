@@ -14,8 +14,8 @@ public class Survey {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String name;
+    private Type type;
 
 
 

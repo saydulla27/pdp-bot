@@ -27,5 +27,24 @@ public interface State {
     String A_ADD_STUDENT_1 = "a_add_student_1";
 
     String START_STUDENT = "start_student";
+    String ST_Q_1 = "st_q_1";
+    String ST_Q_2 = "st_q_2";
+    String ST_Q_3 = "st_q_3";
+    String ST_Q_4 = "st_q_4";
+    String ST_Q_5 = "st_q_5";
+    String ST_Q_6 = "st_q_6";
+    String ST_Q_7 = "st_q_7";
+    String ST_Q_8 = "st_q_8";
+    String ST_Q_9 = "st_q_9";
+    String ST_Q_10 = "st_q_10";
+    String ST_Q_11 = "st_q_11";
+    String ST_Q_12 = "st_q_12";
+    String ST_Q_13 = "st_q_13";
+    String ST_Q_14 = "st_q_14";
+
+
+
+
+
 
 }

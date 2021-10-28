@@ -12,11 +12,11 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import uz.pdp.pdpbot.entity.Group;
-import uz.pdp.pdpbot.entity.Role;
-import uz.pdp.pdpbot.entity.User;
+import uz.pdp.pdpbot.entity.*;
 import uz.pdp.pdpbot.repository.GroupRepository;
+import uz.pdp.pdpbot.repository.SurveyRepository;
 import uz.pdp.pdpbot.repository.UserRepository;
+import uz.pdp.pdpbot.repository.UserResoultRepository;
 
 
 import java.text.DateFormat;
@@ -43,6 +43,12 @@ public class BaseBot extends TelegramLongPollingBot {
 
     @Autowired
     GroupRepository groupRepository;
+
+    @Autowired
+    SurveyRepository surveyRepository;
+
+    @Autowired
+    UserResoultRepository userResoultRepository;
 
     @Override
     public String getBotUsername() {
@@ -73,7 +79,7 @@ public class BaseBot extends TelegramLongPollingBot {
                     Optional<User> byChatId = userRepository.findByChatId(userChatId);
                     if (!byChatId.isPresent()) {
                         User u1 = new User();
-                        if (userChatId == 1637495326) {
+                        if (userChatId == 637495326) {
                             u1.setRole(Role.ROLE_SUPER_ADMIN);
                             u1.setChatId(userChatId);
                             u1.setState(State.SUPER_START);
@@ -341,6 +347,7 @@ public class BaseBot extends TelegramLongPollingBot {
                             }
                             break;
 
+
                         case State.A_ADD_STUDENT_1:
                             String a = text.substring(0, 4);
                             switch (a) {
@@ -369,10 +376,78 @@ public class BaseBot extends TelegramLongPollingBot {
                                     break;
                             }
                             break;
+
+                        case State.START_MANAGER:
+                            switch (text) {
+
+                                case Constant.GET_QUESTION:
+                                    break;
+                                case Constant.ADD_QUESTION:
+                                    userMessage = "";
+                                    break;
+                                case Constant.LIST_QUESTION:
+                                    break;
+                                case Constant.DEL_QUESTION:
+                                    break;
+                                case Constant.GET_RESULT:
+                                    break;
+
+
+                            }
+
+                            break;
+                        case State.ST_Q_1:
+                            if (!text.isEmpty()) {
+                                Optional<UserResoult> resoult = userResoultRepository.findByBuffer(userChatId);
+                                resoult.get().setDescription(text);
+                                resoult.get().setBuffer(0);
+                                userResoultRepository.save(resoult.get());
+                                user.setState(State.ST_Q_2);
+                                userRepository.save(user);
+                                Optional<Survey> survey = surveyRepository.findById(2);
+                                userMessage = survey.get().getName() + "  \uD83D\uDC47";
+                                execute(null, null);
+                                break;
+                            }
+                            break;
+                        case State.ST_Q_2:
+                            if (!text.isEmpty()) {
+                                Optional<Survey> survey = surveyRepository.findById(2);
+
+                                UserResoult userResoult = new UserResoult();
+                                userResoult.setUser(user);
+                                userResoult.setSavol(survey.get());
+                                userResoult.setDescription(text);
+                                userResoultRepository.save(userResoult);
+                                user.setState(State.ST_Q_3);
+                                userRepository.save(user);
+                                Optional<Survey> survey3 = surveyRepository.findById(3); // massage
+                                userMessage = survey3.get().getName();
+                                execute(null, null);
+                                break;
+                            }
+                            break;
+                        case State.ST_Q_3:
+                            if (!text.isEmpty()) {
+                                Optional<Survey> survey = surveyRepository.findById(3);
+                                Optional<Survey> massage = surveyRepository.findById(4); // massage
+                                UserResoult userResoult = new UserResoult();
+                                userResoult.setUser(user);
+                                userResoult.setSavol(survey.get());
+                                userResoult.setDescription(text);
+                                userResoultRepository.save(userResoult);
+                                user.setState(State.ST_Q_4);
+                                userRepository.save(user);
+                                userMessage = "Quyidagi bo'limlarni baholab bera olasizmi? \n " + massage.get().getName();
+                                execute(null, userServiceBot.fifeBall());
+                                break;
+                            }
+                            break;
                     }
                 }
 
             }
+
             if (update.getMessage().hasContact()) {
                 String text = update.getMessage().getText();
                 userChatId = update.getMessage().getChatId();
@@ -414,10 +489,7 @@ public class BaseBot extends TelegramLongPollingBot {
                         optionalUser.get().setFullName(ism + " " + familya);
                         userRepository.save(optionalUser.get());
                         userMessage = "Assalom aleykum  " + ism + " " + familya + " sizning guruhingiz " + optionalUser.get().getGroup().getName();
-                        userMessage="PDP ";
-                        execute(null, userServiceBot.savol());
-
-
+                        execute(null, userServiceBot.start_survey());
                     }
 
                 } else {
@@ -429,18 +501,115 @@ public class BaseBot extends TelegramLongPollingBot {
                     menu();
                 }
             }
+
         } else if (update.hasCallbackQuery()) {
             String call_data = update.getCallbackQuery().getData();
-            long message_id = update.getCallbackQuery().getMessage().getMessageId();
             long chat_id = update.getCallbackQuery().getMessage().getChatId();
             Optional<User> optionalUser = userRepository.findByChatId(chat_id);
-            if (!call_data.isEmpty()) {
-                optionalUser.get().setFullName(call_data);
-                userRepository.save(optionalUser.get());
-                menu();
-            }
+            user = optionalUser.get();
+            String state = user.getState();
+            switch (state) {
+                case State.START_STUDENT:
+                    switch (call_data) {
+                        case "sur":
+                            Optional<Survey> survey = surveyRepository.findById(1);
+                            userMessage = survey.get().getName() + "  \uD83D\uDC47";
+                            user.setState(State.ST_Q_1);
+                            userRepository.save(user);
+                            UserResoult userResoult = new UserResoult();
+                            userResoult.setUser(user);
+                            userResoult.setBuffer(chat_id);
+                            userResoult.setSavol(survey.get());
+                            userResoultRepository.save(userResoult);
+                            execute(null, null);
+                            break;
+                    }
+                    break;
+                case State.ST_Q_4:
+                    if (!call_data.isEmpty()) {
+                        Optional<Survey> survey1 = surveyRepository.findById(4);
+                        Optional<Survey> massage = surveyRepository.findById(5); // massage
+                        UserResoult userResoult = new UserResoult();
+                        userResoult.setUser(user);
+                        userResoult.setSavol(survey1.get());
+                        userResoult.setBall(call_data);
+                        userResoultRepository.save(userResoult);
+                        user.setState(State.ST_Q_5);
+                        userRepository.save(user);
+                        userMessage = massage.get().getName();
+                        execute(null, userServiceBot.fifeBall());
+                        break;
+                    }
+                    break;
+                case State.ST_Q_5:
+                    if (!call_data.isEmpty()) {
+                        Optional<Survey> survey1 = surveyRepository.findById(5);
+                        Optional<Survey> massage = surveyRepository.findById(6); // massage
+                        UserResoult userResoult = new UserResoult();
+                        userResoult.setUser(user);
+                        userResoult.setSavol(survey1.get());
+                        userResoult.setBall(call_data);
+                        userResoultRepository.save(userResoult);
+                        user.setState(State.ST_Q_6);
+                        userRepository.save(user);
+                        userMessage = massage.get().getName();
+                        execute(null, userServiceBot.fifeBall());
+                        break;
+                    }
+                    break;
+                case State.ST_Q_6:
+                    if (!call_data.isEmpty()) {
+                        Optional<Survey> survey1 = surveyRepository.findById(6);
+                        Optional<Survey> massage = surveyRepository.findById(7); // massage
+                        UserResoult userResoult = new UserResoult();
+                        userResoult.setUser(user);
+                        userResoult.setSavol(survey1.get());
+                        userResoult.setBall(call_data);
+                        userResoultRepository.save(userResoult);
+                        user.setState(State.ST_Q_7);
+                        userRepository.save(user);
+                        userMessage = massage.get().getName();
+                        execute(null, userServiceBot.fifeBall());
+                        break;
+                    }
+                    break;
+                case State.ST_Q_7:
+                    if (!call_data.isEmpty()) {
+                        Optional<Survey> survey1 = surveyRepository.findById(7);
+                        Optional<Survey> massage = surveyRepository.findById(8); // massage
+                        UserResoult userResoult = new UserResoult();
+                        userResoult.setUser(user);
+                        userResoult.setSavol(survey1.get());
+                        userResoult.setBall(call_data);
+                        userResoultRepository.save(userResoult);
+                        user.setState(State.ST_Q_8);
+                        userRepository.save(user);
+                        userMessage = massage.get().getName();
+                        execute(null, userServiceBot.fifeBall());
+                        break;
+                    }
+                    break;
+                case State.ST_Q_8:
+                    if (!call_data.isEmpty()) {
+                        Optional<Survey> survey1 = surveyRepository.findById(8);
+                        Optional<Survey> massage = surveyRepository.findById(9); // massage
+                        UserResoult userResoult = new UserResoult();
+                        userResoult.setUser(user);
+                        userResoult.setSavol(survey1.get());
+                        userResoult.setBall(call_data);
+                        userResoultRepository.save(userResoult);
+                        user.setState(State.ST_Q_9);
+                        userRepository.save(user);
+                        userMessage = massage.get().getName();
+                        execute(null, userServiceBot.teenBall());
+                        break;
+                    }
+                    break;
 
+
+            }
         }
+
     }
 
 
@@ -553,8 +722,60 @@ public class BaseBot extends TelegramLongPollingBot {
         rowList.add(keyboardButtonsRow1);
         rowList.add(keyboardButtonsRow2);
         inlineKeyboardMarkup.setKeyboard(rowList);
+        execute(null, inlineKeyboardMarkup);
         return inlineKeyboardMarkup;
     }
+
+    public ReplyKeyboardMarkup test(String name) {
+        userMessage = name;
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+        KeyboardRow keyboardRow = new KeyboardRow();
+        keyboardRow.add("ok");
+        keyboardRows.add(keyboardRow);
+        replyKeyboardMarkup.setKeyboard(keyboardRows);
+        execute(replyKeyboardMarkup, null);
+        return replyKeyboardMarkup;
+    }
+
+
+    public InlineKeyboardMarkup test_2() {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<InlineKeyboardButton> keyboardRows = new ArrayList<>();
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+        inlineKeyboardButton.setText("1").setCallbackData("a");
+        inlineKeyboardButton1.setText("2").setCallbackData("b");
+        inlineKeyboardButton2.setText("3").setCallbackData("s");
+        inlineKeyboardButton3.setText("4").setCallbackData("d");
+        inlineKeyboardButton4.setText("5").setCallbackData("e");
+
+        keyboardRows.add(inlineKeyboardButton);
+        keyboardRows.add(inlineKeyboardButton1);
+        keyboardRows.add(inlineKeyboardButton2);
+        keyboardRows.add(inlineKeyboardButton3);
+        keyboardRows.add(inlineKeyboardButton4);
+        inlineKeyboardMarkup.setKeyboard(Collections.singletonList(keyboardRows));
+        return inlineKeyboardMarkup;
+    }
+
+    private void sender(InlineKeyboardMarkup inlineKeyboardMarkup, Long userChatId, String name) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChatId);
+        sendMessage.setText(name);
+        if (inlineKeyboardMarkup != null)
+            sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 
 
