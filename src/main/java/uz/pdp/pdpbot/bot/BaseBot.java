@@ -386,13 +386,10 @@ public class BaseBot extends TelegramLongPollingBot {
                         case State.START_MANAGER:
                             switch (text) {
                                 case Constant.GET_QUESTION:
-                                    for (User user1 : userRepository.findByRole(Role.ROLE_STUDENT)) {
-                                        studentmassage = "Iltimos sorovnomamizda qatnashing";
-                                        execute1(userServiceBot.start_survey(), user1.getChatId(), studentmassage);
-                                    }
+                                    userMessage="Savolni tanlang";
+                                    execute(userServiceBot.getSurvey(),null);
+
                                     break;
-
-
                                 case Constant.ADD_QUESTION:
                                     userMessage = "";
                                     break;
@@ -424,7 +421,6 @@ public class BaseBot extends TelegramLongPollingBot {
                         case State.ST_Q_2:
                             if (!text.isEmpty()) {
                                 Optional<Survey> survey = surveyRepository.findById(2);
-
                                 UserResoult userResoult = new UserResoult();
                                 userResoult.setUser(user);
                                 userResoult.setSavol(survey.get());
@@ -584,7 +580,6 @@ public class BaseBot extends TelegramLongPollingBot {
                         default:
                             userMessage = "\uD83E\uDD0C";
                             execute(null, null);
-
                     }
                     break;
                 case State.ST_Q_4:
@@ -869,4 +864,7 @@ public class BaseBot extends TelegramLongPollingBot {
 
 }
 
-
+//
+// for (User user1 : userRepository.findByRole(Role.ROLE_STUDENT)) {
+//         studentmassage = "Iltimos sorovnomamizda qatnashing";
+//         execute1(userServiceBot.start_survey(), user1.getChatId(), studentmassage);

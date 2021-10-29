@@ -7,12 +7,13 @@ import uz.pdp.pdpbot.entity.Survey;
 import java.util.Optional;
 
 
-public interface SurveyRepository extends JpaRepository <Survey,Integer>{
+public interface SurveyRepository extends JpaRepository<Survey, Integer> {
 
-    Optional <Survey> findByType (int type);
-    Optional <Survey> findAllBy ();
+    Optional<Survey> findByType(int type);
 
+    Optional<Survey> findAllBy();
 
+    Optional<Survey> findByTitle(String title);
 
 
 }

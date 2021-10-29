@@ -18,6 +18,4 @@ public class Survey {
     private Type type;
     private String title;
 
-
-
 }

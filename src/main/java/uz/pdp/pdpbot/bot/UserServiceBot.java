@@ -10,8 +10,10 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.pdp.pdpbot.entity.Group;
 import uz.pdp.pdpbot.entity.Role;
+import uz.pdp.pdpbot.entity.Survey;
 import uz.pdp.pdpbot.entity.User;
 import uz.pdp.pdpbot.repository.GroupRepository;
+import uz.pdp.pdpbot.repository.SurveyRepository;
 import uz.pdp.pdpbot.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -28,6 +30,9 @@ public class UserServiceBot {
     BaseBot baseBot;
     @Autowired
     GroupRepository groupRepository;
+
+    @Autowired
+    SurveyRepository surveyRepository;
 
 
     public ReplyKeyboardMarkup addStudent() {
@@ -112,6 +117,22 @@ public class UserServiceBot {
         return replyKeyboardMarkup;
     }
 
+    public ReplyKeyboardMarkup getSurvey() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+        List<Survey> all = surveyRepository.findAll();
+        for (Survey survey : all) {
+            KeyboardRow keyboardRow = new KeyboardRow();
+            keyboardRow.add(new KeyboardButton(survey.getTitle()));
+            keyboardRows.add(keyboardRow);
+        }
+        KeyboardRow keyboardRow1 = new KeyboardRow();
+        keyboardRow1.add(new KeyboardButton(Constant.BACK_M));
+        keyboardRows.add(keyboardRow1);
+
+        replyKeyboardMarkup.setKeyboard(keyboardRows);
+        return replyKeyboardMarkup;
+    }
     public ReplyKeyboardMarkup backAdmin() {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
@@ -229,4 +250,35 @@ public class UserServiceBot {
         return replyKeyboardMarkup;
     }
 
+    public InlineKeyboardMarkup Mentor_darsini_baxolash () {
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+        List<InlineKeyboardButton> keyboardRows = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardRows1 = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardRows2 = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardRows3 = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardRows4 = new ArrayList<>();
+        inlineKeyboardButton.setText(" 1 – bilimlari yetarli emas").setCallbackData("1");
+        inlineKeyboardButton1.setText(" 2 – bilimlari pastroq").setCallbackData("2");
+        inlineKeyboardButton2.setText(" 3 – bilimlari o’rta darajada").setCallbackData("3");
+        inlineKeyboardButton3.setText(" 4 – bilimlari yetarli").setCallbackData("4");
+        inlineKeyboardButton4.setText(" 5 – bilimlari juda ham kuchli").setCallbackData("5");
+        keyboardRows.add(inlineKeyboardButton);
+        keyboardRows1.add(inlineKeyboardButton1);
+        keyboardRows2.add(inlineKeyboardButton2);
+        keyboardRows3.add(inlineKeyboardButton3);
+        keyboardRows4.add(inlineKeyboardButton4);
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        rowList.add(keyboardRows);
+        rowList.add(keyboardRows1);
+        rowList.add(keyboardRows2);
+        rowList.add(keyboardRows3);
+        rowList.add(keyboardRows4);
+        inlineKeyboardMarkup.setKeyboard(rowList);
+        return inlineKeyboardMarkup;
+    }
 }
