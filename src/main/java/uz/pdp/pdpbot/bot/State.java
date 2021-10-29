@@ -38,9 +38,19 @@ public interface State {
     String ST_Q_9 = "st_q_9";
     String ST_Q_10 = "st_q_10";
     String ST_Q_11 = "st_q_11";
-    String ST_Q_12 = "st_q_12";
-    String ST_Q_13 = "st_q_13";
-    String ST_Q_14 = "st_q_14";
+
+    String ST_QQ_1 = "st_qq_1";
+    String ST_QQ_2 = "st_qq_2";
+    String ST_QQ_3 = "st_qq_3";
+    String ST_QQ_4 = "st_qq_4";
+    String ST_QQ_5 = "st_qq_5";
+    String ST_QQ_6 = "st_qq_6";
+    String ST_QQ_7 = "st_qq_7";
+    String ST_QQ_8 = "st_qq_8";
+    String ST_QQ_9 = "st_qq_9";
+    String ST_QQ_10 = "st_qq_10";
+    String ST_QQ_11 = "st_qq_11";
+
 
 
 

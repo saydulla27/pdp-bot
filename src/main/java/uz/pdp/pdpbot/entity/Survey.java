@@ -16,6 +16,7 @@ public class Survey {
     private Integer id;
     private String name;
     private Type type;
+    private String title;
 
 
 

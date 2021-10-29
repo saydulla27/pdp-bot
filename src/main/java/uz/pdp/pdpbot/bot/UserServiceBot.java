@@ -156,7 +156,7 @@ public class UserServiceBot {
     }
     public InlineKeyboardMarkup teenBall() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<InlineKeyboardButton> keyboardRows = new ArrayList<>();
+
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
@@ -167,6 +167,8 @@ public class UserServiceBot {
         InlineKeyboardButton inlineKeyboardButton7 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton8 = new InlineKeyboardButton();
         InlineKeyboardButton inlineKeyboardButton9 = new InlineKeyboardButton();
+        List<InlineKeyboardButton> keyboardRows = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardRows1 = new ArrayList<>();
         inlineKeyboardButton.setText(" 1 ").setCallbackData("1");
         inlineKeyboardButton1.setText(" 2 ").setCallbackData("2");
         inlineKeyboardButton2.setText(" 3 ").setCallbackData("3");
@@ -182,18 +184,28 @@ public class UserServiceBot {
         keyboardRows.add(inlineKeyboardButton2);
         keyboardRows.add(inlineKeyboardButton3);
         keyboardRows.add(inlineKeyboardButton4);
-        keyboardRows.add(inlineKeyboardButton5);
-        keyboardRows.add(inlineKeyboardButton6);
-        keyboardRows.add(inlineKeyboardButton7);
-        keyboardRows.add(inlineKeyboardButton8);
-        keyboardRows.add(inlineKeyboardButton9);
-
-        inlineKeyboardMarkup.setKeyboard(Collections.singletonList(keyboardRows));
+        keyboardRows1.add(inlineKeyboardButton5);
+        keyboardRows1.add(inlineKeyboardButton6);
+        keyboardRows1.add(inlineKeyboardButton7);
+        keyboardRows1.add(inlineKeyboardButton8);
+        keyboardRows1.add(inlineKeyboardButton9);
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        rowList.add(keyboardRows);
+        rowList.add(keyboardRows1);
+        inlineKeyboardMarkup.setKeyboard(rowList);
         return inlineKeyboardMarkup;
     }
 
 
-
+    public ReplyKeyboardMarkup Start_Student() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+        KeyboardRow keyboardRow = new KeyboardRow();
+        keyboardRow.add(Constant.START_STUDENT);
+        keyboardRows.add(keyboardRow);
+        replyKeyboardMarkup.setKeyboard(keyboardRows);
+        return replyKeyboardMarkup;
+    }
 
 
 
