@@ -23,7 +23,11 @@ public class Dataloder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-
+        User user3 = new User();
+        user3.setPhoneNumber("998330571996");
+        user3.setRole(Role.ROlE_ADMIN);
+//        user.setGroup(guruh);
+        userRepository.save(user3);
 
 
         Group guruh = new Group();
@@ -36,20 +40,16 @@ public class Dataloder implements CommandLineRunner {
         student.setGroup(guruh);
         userRepository.save(student);
 
-        User user = new User();
-        user.setPhoneNumber("+998330571996");
-        user.setRole(Role.ROLE_STUDENT);
-        user.setGroup(guruh);
-        userRepository.save(user);
+
 
         User user1 = new User();
-        user.setPhoneNumber("998973451445");
-        user.setRole(Role.ROLE_STUDENT);
-        user.setGroup(guruh);
-        userRepository.save(user);
+        user1.setPhoneNumber("998973451445");
+        user1.setRole(Role.ROLE_STUDENT);
+        user1.setGroup(guruh);
+        userRepository.save(user1);
 
         User student1 = new User();
-        student1.setPhoneNumber("+998338476311");
+        student1.setPhoneNumber("998338476311");
         student1.setRole(Role.ROLE_MANAGER);
         userRepository.save(student1);
 

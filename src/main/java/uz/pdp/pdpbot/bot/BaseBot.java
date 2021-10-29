@@ -354,9 +354,10 @@ public class BaseBot extends TelegramLongPollingBot {
 
 
                         case State.A_ADD_STUDENT_1:
-                            String a = text.substring(0, 4);
+                            String a = text.substring(0, 3);
+
                             switch (a) {
-                                case "+998":
+                                case "998":
                                     Optional<Group> optionalGroup = groupRepository.findByBuffer(userChatId);
                                     User student = new User();
                                     student.setPhoneNumber(text);
@@ -376,7 +377,7 @@ public class BaseBot extends TelegramLongPollingBot {
                                     execute(userServiceBot.addStudent(), null);
                                     break;
                                 default:
-                                    userMessage = "Raqamni togri tering (+998......) ";
+                                    userMessage = "Raqamni togri tering (998......) ";
                                     execute(null, null);
                                     break;
                             }
@@ -386,8 +387,8 @@ public class BaseBot extends TelegramLongPollingBot {
                             switch (text) {
                                 case Constant.GET_QUESTION:
                                     for (User user1 : userRepository.findByRole(Role.ROLE_STUDENT)) {
-                                        studentmassage="Iltimos sorovnomamizda qatnashing";
-                                       execute1(userServiceBot.start_survey(), user1.getChatId(),studentmassage);
+                                        studentmassage = "Iltimos sorovnomamizda qatnashing";
+                                        execute1(userServiceBot.start_survey(), user1.getChatId(), studentmassage);
                                     }
                                     break;
 
@@ -502,6 +503,9 @@ public class BaseBot extends TelegramLongPollingBot {
                 String ism = update.getMessage().getFrom().getFirstName();
                 String familya = update.getMessage().getFrom().getLastName();
                 String phone = update.getMessage().getContact().getPhoneNumber();
+                if (phone.length() > 12) {
+                    phone = phone.substring(1, 13);
+                } else phone = update.getMessage().getContact().getPhoneNumber();
                 Optional<User> optionalUser = userRepository.findByPhoneNumber(phone);
                 Optional<User> userBuffer = userRepository.findByBuffer(userChatId);
                 if (optionalUser.isPresent()) {
@@ -720,6 +724,7 @@ public class BaseBot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+
     public ReplyKeyboardMarkup menu() {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
