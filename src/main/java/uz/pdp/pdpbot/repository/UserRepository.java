@@ -19,7 +19,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByState(String state);
 
-    List<User> findByRole(Role role);
+    List<User> findByRoleAndActiveTrue  (Role role);
+    List<User> findByRole  (Role role);
 
     List<User> findByActiveFalseAndRole(Role role);
+
+    List<User> findAllByActiveTrue();
 }

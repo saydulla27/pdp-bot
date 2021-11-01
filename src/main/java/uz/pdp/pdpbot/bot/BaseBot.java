@@ -386,8 +386,10 @@ public class BaseBot extends TelegramLongPollingBot {
                         case State.START_MANAGER:
                             switch (text) {
                                 case Constant.GET_QUESTION:
-                                    userMessage="Savolni tanlang";
-                                    execute(userServiceBot.getSurvey(),null);
+                                    user.setState(State.ST_QQ_1);
+                                    userRepository.save(user);
+                                    userMessage = "Yuboradigan guruhingizni tanlang ";
+                                    execute(userServiceBot.getgroup(), null);
 
                                     break;
                                 case Constant.ADD_QUESTION:
@@ -400,10 +402,44 @@ public class BaseBot extends TelegramLongPollingBot {
                                 case Constant.GET_RESULT:
                                     break;
 
+                            }
+                            break;
+
+
+                        case State.ST_QQ_1:
+                            Optional<Group> byName = groupRepository.findByName(text);
+                            byName.get().setBuffer(userChatId);
+                            groupRepository.save(byName.get());
+                            user.setState(State.ST_QQ_2);
+                            userRepository.save(user);
+                            userMessage = "Kerakli soravnomani tanlang";
+                            execute(userServiceBot.getSurvey(), null);
+                            break;
+                        case State.ST_QQ_2:
+                            Optional<Survey> byTitle = surveyRepository.findByTitle(text);
+                            Type type = byTitle.get().getType();
+                            Optional<Group> sendgroup = groupRepository.findByBuffer(userChatId);
+
+                            switch (type) {
+                                case COMMIT:
+                                    user.setState(State.START_MANAGER);
+                                    userRepository.save(user);
+                                    for (User student : sendgroup.get().getStudents()) {
+                                        if (student.isActive()) {
+                                            execute1(userServiceBot.survey_comment(text), student.getChatId(), "Sorovnomada qatnashing");
+                                        }
+
+                                    }
+                                    userMessage = "yuborildi";
+                                    execute(userServiceBot.startManager(), null);
+                                    break;
 
                             }
 
+
                             break;
+
+
                         case State.ST_Q_1:
                             if (!text.isEmpty()) {
                                 Optional<UserResoult> resoult = userResoultRepository.findByBuffer(userChatId);
@@ -418,6 +454,8 @@ public class BaseBot extends TelegramLongPollingBot {
                                 break;
                             }
                             break;
+
+
                         case State.ST_Q_2:
                             if (!text.isEmpty()) {
                                 Optional<Survey> survey = surveyRepository.findById(2);
@@ -558,8 +596,10 @@ public class BaseBot extends TelegramLongPollingBot {
             String state = user.getState();
             switch (state) {
                 case State.START_STUDENT:
-                    switch (call_data) {
-                        case "sur":
+                    Optional<Survey> optional = surveyRepository.findByTitle(call_data);
+                    Type type = optional.get().getType();
+                    switch (type) {
+                        case FIVE_BALL:
                             Optional<Survey> survey = surveyRepository.findById(1);
                             userMessage = survey.get().getName() + "  \uD83D\uDC47";
                             user.setState(State.ST_Q_1);
@@ -571,12 +611,15 @@ public class BaseBot extends TelegramLongPollingBot {
                             userResoultRepository.save(userResoult);
                             execute(null, null);
                             break;
-                        case "a":
+                        case COMMIT:
+                            userMessage = optional.get().getName();
+                            execute(null, null);
+
+
                             break;
-                        case "b":
+                        case TEEN_BAll:
                             break;
-                        case "c":
-                            break;
+
                         default:
                             userMessage = "\uD83E\uDD0C";
                             execute(null, null);

@@ -24,4 +24,16 @@ public interface Constant {
     String LIST_QUESTION = "Savollar ro`yhati";
     String GET_RESULT = "Natijalar";
     String GET_QUESTION = "Sorovnomalar yuborish";
+
+    String Mentor_darsini_baxolash="Mentor_darsini_baxolash";
+    String Mentor_tushuntirishini_baxolash="Mentor_tushuntirishini_baxolash";
+    String Pdp_programmasi_baxolash="Pdp_programmasi_baxolash";
+    String Pdp_sharoiti_baxolash="Pdp_sharoiti_baxolash";
+    String Pdp_tavsiya_ehtimoli="Pdp_tavsiya_ehtimoli";
+    String Pdp_nimani_ozgartirishi="Pdp_nimani_ozgartirishi";
+    String STANDART_SAVOLLAR="standart_savollar";
+
+
+
+
 }

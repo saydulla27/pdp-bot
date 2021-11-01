@@ -17,5 +17,6 @@ public class Survey {
     private String name;
     private Type type;
     private String title;
+    private long buffer;
 
 }
