@@ -31,7 +31,7 @@ public interface Constant {
     String Pdp_sharoiti_baxolash="Pdp_sharoiti_baxolash";
     String Pdp_tavsiya_ehtimoli="Pdp_tavsiya_ehtimoli";
     String Pdp_nimani_ozgartirishi="Pdp_nimani_ozgartirishi";
-    String STANDART_SAVOLLAR="standart_savollar";
+    String STANDART_SAVOLLAR="standart";
 
 
 

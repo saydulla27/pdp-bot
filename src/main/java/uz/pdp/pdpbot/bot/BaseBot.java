@@ -416,29 +416,39 @@ public class BaseBot extends TelegramLongPollingBot {
                             execute(userServiceBot.getSurvey(), null);
                             break;
                         case State.ST_QQ_2:
-                            Optional<Survey> byTitle = surveyRepository.findByTitle(text);
-                            Type type = byTitle.get().getType();
                             Optional<Group> sendgroup = groupRepository.findByBuffer(userChatId);
-
-                            switch (type) {
-                                case COMMIT:
-                                    user.setState(State.START_MANAGER);
-                                    userRepository.save(user);
-                                    for (User student : sendgroup.get().getStudents()) {
-                                        if (student.isActive()) {
-                                            execute1(userServiceBot.survey_comment(text), student.getChatId(), "Sorovnomada qatnashing");
-                                        }
-
+                            if (!text.isEmpty()) {
+                                user.setState(State.START_MANAGER);
+                                userRepository.save(user);
+                                for (User student : sendgroup.get().getStudents()) {
+                                    if (student.isActive()) {
+                                        execute1(userServiceBot.survey_comment(text), student.getChatId(), "Sorovnomada qatnashing");
                                     }
-                                    userMessage = "yuborildi";
-                                    execute(userServiceBot.startManager(), null);
-                                    break;
-
+                                }
+                                sendgroup.get().setBuffer(null);
+                                groupRepository.save(sendgroup.get());
+                                userMessage = "yuborildi";
+                                execute(userServiceBot.startManager(), null);
                             }
-
-
                             break;
 
+                        case State.ST_QQ_3:
+                            Optional<Survey> byBuffer1 = surveyRepository.findByBuffer(userChatId);
+                            if (!text.isEmpty()) {
+                                UserResoult userResoult = new UserResoult();
+                                userResoult.setUser(user);
+                                userResoult.setDescription(text);
+                                userResoult.setSavol(byBuffer1.get());
+                                userResoultRepository.save(userResoult);
+                                user.setState(State.START_STUDENT);
+                                userRepository.save(user);
+                                byBuffer1.get().setBuffer(0);
+                                surveyRepository.save(byBuffer1.get());
+                                userMessage = "Javobingiz uchun raxmat";
+                                execute(userServiceBot.Start_Student(), null);
+
+                            }
+                            break;
 
                         case State.ST_Q_1:
                             if (!text.isEmpty()) {
@@ -454,8 +464,6 @@ public class BaseBot extends TelegramLongPollingBot {
                                 break;
                             }
                             break;
-
-
                         case State.ST_Q_2:
                             if (!text.isEmpty()) {
                                 Optional<Survey> survey = surveyRepository.findById(2);
@@ -599,7 +607,7 @@ public class BaseBot extends TelegramLongPollingBot {
                     Optional<Survey> optional = surveyRepository.findByTitle(call_data);
                     Type type = optional.get().getType();
                     switch (type) {
-                        case FIVE_BALL:
+                        case STANDARD:
                             Optional<Survey> survey = surveyRepository.findById(1);
                             userMessage = survey.get().getName() + "  \uD83D\uDC47";
                             user.setState(State.ST_Q_1);
@@ -613,11 +621,31 @@ public class BaseBot extends TelegramLongPollingBot {
                             break;
                         case COMMIT:
                             userMessage = optional.get().getName();
+                            optional.get().setBuffer(userChatId);
+                            surveyRepository.save(optional.get());
+                            user.setState(State.ST_QQ_3);
+                            userRepository.save(user);
                             execute(null, null);
-
-
                             break;
                         case TEEN_BAll:
+                            userMessage = optional.get().getName();
+                            optional.get().setBuffer(userChatId);
+                            surveyRepository.save(optional.get());
+                            user.setState(State.ST_QQ_4);
+                            userRepository.save(user);
+                            execute(null, userServiceBot.teenBall());
+                            break;
+
+
+
+
+                        case FIVE_BALL:
+                            userMessage = optional.get().getName();
+                            optional.get().setBuffer(userChatId);
+                            surveyRepository.save(optional.get());
+                            user.setState(State.ST_QQ_4);
+                            userRepository.save(user);
+                            execute(null, userServiceBot.fifeBall());
                             break;
 
                         default:
@@ -625,6 +653,22 @@ public class BaseBot extends TelegramLongPollingBot {
                             execute(null, null);
                     }
                     break;
+
+                case State.ST_QQ_4:
+                    Optional<Survey> survey = surveyRepository.findByBuffer(userChatId);
+                    UserResoult userResoult2 = new UserResoult();
+                    userResoult2.setUser(user);
+                    userResoult2.setSavol(survey.get());
+                    userResoult2.setBall(call_data);
+                    userResoultRepository.save(userResoult2);
+                    survey.get().setBuffer(0);
+                    surveyRepository.save(survey.get());
+                    user.setState(State.START_STUDENT);
+                    userRepository.save(user);
+                    userMessage="Javobingiz uchun raxmat";
+                    execute(userServiceBot.Start_Student(), null);
+                    break;
+
                 case State.ST_Q_4:
                     if (!call_data.isEmpty()) {
                         Optional<Survey> survey1 = surveyRepository.findById(4);
@@ -906,8 +950,3 @@ public class BaseBot extends TelegramLongPollingBot {
     }
 
 }
-
-//
-// for (User user1 : userRepository.findByRole(Role.ROLE_STUDENT)) {
-//         studentmassage = "Iltimos sorovnomamizda qatnashing";
-//         execute1(userServiceBot.start_survey(), user1.getChatId(), studentmassage);
