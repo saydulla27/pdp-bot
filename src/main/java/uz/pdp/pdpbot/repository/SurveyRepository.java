@@ -14,6 +14,8 @@ public interface SurveyRepository extends JpaRepository<Survey, Integer> {
     Optional<Survey> findByBuffer(Long chatId);
 
     Optional<Survey> findByTitle(String title);
+    Optional<Survey> findAllByTitleIsNotNull();
+    Optional<Survey> findAllBy();
 
 
 

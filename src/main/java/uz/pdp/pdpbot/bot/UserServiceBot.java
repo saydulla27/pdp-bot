@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.pdp.pdpbot.entity.Group;
 import uz.pdp.pdpbot.entity.Role;
+import uz.pdp.pdpbot.entity.Survey;
 import uz.pdp.pdpbot.entity.User;
 import uz.pdp.pdpbot.repository.GroupRepository;
 import uz.pdp.pdpbot.repository.SurveyRepository;
@@ -118,33 +119,23 @@ public class UserServiceBot {
     public ReplyKeyboardMarkup getSurvey() {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
+        List<Survey> all = surveyRepository.findAll();
+        for (Survey survey : all) {
 
-        KeyboardRow keyboardRow = new KeyboardRow();
+                KeyboardRow keyboardRow = new KeyboardRow();
+                keyboardRow.add(new KeyboardButton(survey.getTitle()));
+                keyboardRows.add(keyboardRow);
+
+
+        }
+
         KeyboardRow keyboardRow1 = new KeyboardRow();
-        KeyboardRow keyboardRow2 = new KeyboardRow();
-        KeyboardRow keyboardRow3 = new KeyboardRow();
-        KeyboardRow keyboardRow4 = new KeyboardRow();
-        KeyboardRow keyboardRow5 = new KeyboardRow();
-        KeyboardRow keyboardRow6 = new KeyboardRow();
-        KeyboardRow keyboardRow7 = new KeyboardRow();
-        keyboardRow.add(Constant.STANDART_SAVOLLAR);
-        keyboardRow1.add(Constant.Mentor_tushuntirishini_baxolash);
-        keyboardRow2.add(Constant.Pdp_programmasi_baxolash);
-        keyboardRow3.add(Constant.Pdp_sharoiti_baxolash);
-        keyboardRow4.add(Constant.Pdp_tavsiya_ehtimoli);
-        keyboardRow5.add(Constant.Pdp_nimani_ozgartirishi);
-        keyboardRow6.add(Constant.Mentor_darsini_baxolash);
-        keyboardRow7.add(Constant.BACK_M);
-        keyboardRows.add(keyboardRow);
+        keyboardRow1.add(new KeyboardButton(Constant.BACK_M));
         keyboardRows.add(keyboardRow1);
-        keyboardRows.add(keyboardRow2);
-        keyboardRows.add(keyboardRow3);
-        keyboardRows.add(keyboardRow4);
-        keyboardRows.add(keyboardRow5);
-        keyboardRows.add(keyboardRow6);
-        keyboardRows.add(keyboardRow7);
+
         replyKeyboardMarkup.setKeyboard(keyboardRows);
         return replyKeyboardMarkup;
+
     }
 
     public ReplyKeyboardMarkup backAdmin() {
