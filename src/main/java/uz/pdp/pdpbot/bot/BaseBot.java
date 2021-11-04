@@ -1,5 +1,6 @@
 package uz.pdp.pdpbot.bot;
 
+import com.sun.jmx.snmp.tasks.ThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -105,436 +106,448 @@ public class BaseBot extends TelegramLongPollingBot {
                 } else {
                     Optional<User> byChatId = userRepository.findByChatId(userChatId);
                     Optional<User> byBuffer = userRepository.findByBuffer(userChatId);
-                    user = byChatId.get();
-                    String state = user.getState();
+                    if (byChatId.isPresent()) {
 
-                    switch (state) {
-                        case State.START:
-                            switch (text) {
-                                case Constant.PDP_SEND_CONTACT:
-                                    userMessage = "Raqam yuborish tugmasini bosing";
-                                    user.setState(State.SEND_CONTACT);
-                                    user.setBuffer(userChatId);
-                                    userRepository.save(user);
-                                    execute(userServiceBot.sendnumber(), null);
-                                    break;
+                        user = byChatId.get();
+                        String state = user.getState();
 
-                                case Constant.PDP_INFO:
-                                    userMessage = "77777777777";
-                                    menu();
-                                    break;
-
-                                default:
-                                    menu();
-                                    break;
-
-                            }
-                            break;
-                        case State.SEND_CONTACT:
-                            if (!text.isEmpty()) {
-                                userMessage = "PDP ACADEMY";
-                                user.setState(State.START);
-                                userRepository.save(user);
-                                menu();
-                                break;
-                            }
-                            break;
-
-
-                        case State.SUPER_START:
-                            switch (text) {
-                                case Constant.ADD_ADMIN:
-                                    User admin = new User();
-                                    admin.setState(State.REG_ADMIN_PHONE);
-                                    admin.setRole(Role.ROlE_ADMIN);
-                                    userRepository.save(admin);
-                                    user.setState(State.S_ADD_ADMIN);
-                                    userRepository.save(user);
-                                    userMessage = "raqam yozing";
-                                    execute(null, null);
-                                    break;
-
-                                case Constant.DEL_ADMIN:
-                                    List<User> byRole = userRepository.findByRole(Role.ROlE_ADMIN);
-                                    if (!byRole.isEmpty()) {
-                                        userMessage = "o`chadigan adminnni tanlang";
-                                        user.setState(State.DELETE_ADMIN_1);
+                        switch (state) {
+                            case State.START:
+                                switch (text) {
+                                    case Constant.PDP_SEND_CONTACT:
+                                        userMessage = "Raqam yuborish tugmasini bosing";
+                                        user.setState(State.SEND_CONTACT);
+                                        user.setBuffer(userChatId);
                                         userRepository.save(user);
-                                        execute(userServiceBot.delateadmins(), null);
+                                        execute(userServiceBot.sendnumber(), null);
                                         break;
-                                    } else
-                                        userMessage = "admin mavjud emas";
-                                    user.setState(State.SUPER_START);
-                                    userRepository.save(user);
-                                    superMenu();
 
-                                    break;
-
-                                case Constant.ADD_MANAGER:
-                                    User manager = new User();
-                                    manager.setState(State.REG_MANAGER_PHONE);
-                                    manager.setRole(Role.ROLE_MANAGER);
-                                    userRepository.save(manager);
-                                    user.setState(State.S_ADD_MANAGER);
-                                    userRepository.save(user);
-                                    userMessage = "raqam yozing";
-                                    execute(null, null);
-                                    break;
-
-                                case Constant.DEL_MANAGER:
-                                    List<User> byRole1 = userRepository.findByRole(Role.ROLE_MANAGER);
-                                    if (!byRole1.isEmpty()) {
-                                        userMessage = "o`chadigan managerni tanlang";
-                                        user.setState(State.DELETE_MANAGER_1);
-                                        userRepository.save(user);
-                                        execute(userServiceBot.delatemanager(), null);
+                                    case Constant.PDP_INFO:
+                                        userMessage = "77777777777";
+                                        menu();
                                         break;
-                                    } else
-                                        userMessage = "manager mavjud emas";
-                                    user.setState(State.SUPER_START);
-                                    userRepository.save(user);
-                                    superMenu();
 
-                                    break;
+                                    default:
+                                        menu();
+                                        break;
 
-
-                                case State.BACK_MENU:
-
-                                    superMenu();
-                                    break;
-                            }
-                            break;
-
-                        case State.DELETE_ADMIN_1:
-                            if (!text.isEmpty()) {
-                                if (text.equals(Constant.BACK_MENU)) {
-                                    userMessage = "super menyu";
-                                    user.setState(State.SUPER_START);
-                                    userRepository.save(user);
-                                    superMenu();
-                                    break;
-                                } else
-                                    user.setState(State.SUPER_START);
-                                userRepository.save(user);
-                                Optional<User> byPhoneNumber = userRepository.findByPhoneNumber(text);
-                                userRepository.delete(byPhoneNumber.get());
-                                userMessage = "bu admin tugadi";
-                                superMenu();
-                                break;
-                            }
-                            break;
-
-                        case State.DELETE_MANAGER_1:
-                            if (!text.isEmpty()) {
-                                if (text.equals(Constant.BACK_M)) {
-                                    userMessage = "super menyu";
-                                    user.setState(State.SUPER_START);
-                                    userRepository.save(user);
-                                    superMenu();
-                                    break;
-                                } else
-                                    user.setState(State.SUPER_START);
-                                userRepository.save(user);
-                                Optional<User> byPhoneNumber = userRepository.findByPhoneNumber(text);
-                                userRepository.delete(byPhoneNumber.get());
-                                userMessage = "bu manager tugadi";
-                                superMenu();
-                                break;
-                            }
-                            break;
-
-
-                        case State.S_ADD_ADMIN:
-                            if (!text.isEmpty()) {
-                                Optional<User> byState = userRepository.findByState(State.REG_ADMIN_PHONE);
-                                byState.get().setPhoneNumber(text);
-                                byState.get().setState(State.REG_ADMIN_PHONE_1);
-                                userRepository.save(byState.get());
-                                user.setState(State.S_ADD_ADMIN_NAME);
-                                userRepository.save(user);
-                                userMessage = "Ismini kiriting";
-                                execute(null, null);
-                            }
-                            break;
-
-                        case State.S_ADD_ADMIN_NAME:
-                            if (!text.isEmpty()) {
-                                Optional<User> byState = userRepository.findByState(State.REG_ADMIN_PHONE_1);
-                                byState.get().setFullName(text);
-                                byState.get().setState(State.REG_ADMIN_OK);
-                                userRepository.save(byState.get());
-                                user.setState(State.SUPER_START);
-                                userRepository.save(user);
-                                userMessage = "ok";
-                            }
-                            superMenu();
-                            break;
-
-                        case State.S_ADD_MANAGER:
-                            if (!text.isEmpty()) {
-                                Optional<User> byState = userRepository.findByState(State.REG_MANAGER_PHONE);
-                                byState.get().setPhoneNumber(text);
-                                byState.get().setState(State.REG_MANAGER_PHONE_1);
-                                userRepository.save(byState.get());
-                                user.setState(State.S_ADD_MANAGER_NAME);
-                                userRepository.save(user);
-                                userMessage = "Ismini kiriting";
-                                execute(null, null);
-                            }
-                            break;
-
-                        case State.S_ADD_MANAGER_NAME:
-                            if (!text.isEmpty()) {
-                                Optional<User> byState = userRepository.findByState(State.REG_MANAGER_PHONE_1);
-                                byState.get().setFullName(text);
-                                byState.get().setState(State.REG_MANAGER_OK);
-                                userRepository.save(byState.get());
-                                user.setState(State.SUPER_START);
-                                userRepository.save(user);
-                                userMessage = "ok";
-                            }
-                            superMenu();
-                            break;
-                        case State.START_ADMIN:
-                            switch (text) {
-                                case Constant.ADD_GROUP:
-                                    userMessage = "Guruh nomini yozing";
-                                    user.setState(State.A_ADD_GROUP);
-                                    userRepository.save(user);
-                                    execute(null, null);
-                                    break;
-                                case Constant.ADD_STUDENT:
-                                    userMessage = "o`quvchini guruhini belgilang";
-                                    user.setState(State.A_ADD_STUDENT);
-                                    userRepository.save(user);
-                                    execute(userServiceBot.getgroup(), null);
-                                    break;
-                                case Constant.GET_GROUP:
-                                    userMessage = "Guruhlar royxati";
-                                    user.setState(State.START_ADMIN);
-                                    userRepository.save(user);
-                                    execute(userServiceBot.getgroup(), null);
-                                    break;
-                                default:
-                                    userMessage = "Menu";
-                                    execute(userServiceBot.addStudent(), null);
-                                    break;
-                            }
-                            break;
-                        case State.A_ADD_GROUP:
-                            if (!text.isEmpty()) {
-                                Group group = new Group();
-                                group.setName(text);
-                                groupRepository.save(group);
-                                user.setState(State.START_ADMIN);
-                                userRepository.save(user);
-                                userMessage = "Guruh qo`shildi";
-                                execute(userServiceBot.addStudent(), null);
-                            }
-                            break;
-
-
-                        case State.A_ADD_STUDENT:
-                            if (text.equals(Constant.BACK_M)) {
-                                user.setState(State.START_ADMIN);
-                                userRepository.save(user);
-                                userMessage = "Kerakli ishni qiling";
-                                execute(userServiceBot.addStudent(), null);
-                                break;
-                            } else if (!text.isEmpty()) {
-                                Optional<Group> optionalGroup = groupRepository.findByName(text);
-                                optionalGroup.get().setBuffer(userChatId);
-                                groupRepository.save(optionalGroup.get());
-                                userMessage = text + " " + "O`quvchini telefon raqamini kiriting :";
-                                user.setState(State.A_ADD_STUDENT_1);
-                                userRepository.save(user);
-                                execute(null, null);
-                            }
-                            break;
-
-
-                        case State.A_ADD_STUDENT_1:
-                            String a = text.substring(0, 3);
-
-                            switch (a) {
-                                case "998":
-                                    Optional<Group> optionalGroup = groupRepository.findByBuffer(userChatId);
-                                    User student = new User();
-                                    student.setPhoneNumber(text);
-                                    student.setRole(Role.ROLE_STUDENT);
-                                    student.setGroup(optionalGroup.get());
-                                    userRepository.save(student);
-                                    userMessage = optionalGroup.get().getName() + " + " + "keyingi telefon raqamini kiriting :";
-                                    execute(userServiceBot.backAdmin(), null);
-                                    break;
-                                case Constant.BACK_ADMIN:
-                                    userMessage = "Xamma raqamlar qoshildi";
-                                    user.setState(State.START_ADMIN);
-                                    userRepository.save(user);
-                                    Optional<Group> byBufferGroup = groupRepository.findByBuffer(userChatId);
-                                    byBufferGroup.get().setBuffer(null);
-                                    groupRepository.save(byBufferGroup.get());
-                                    execute(userServiceBot.addStudent(), null);
-                                    break;
-                                default:
-                                    userMessage = "Raqamni togri tering (998......) ";
-                                    execute(null, null);
-                                    break;
-                            }
-                            break;
-
-                        case State.START_MANAGER:
-                            switch (text) {
-                                case Constant.GET_QUESTION:
-                                    user.setState(State.ST_QQ_1);
-                                    userRepository.save(user);
-                                    userMessage = "Yuboradigan guruhingizni tanlang ";
-                                    execute(userServiceBot.getgroup(), null);
-
-                                    break;
-                                case Constant.ADD_QUESTION:
-                                    userMessage = "";
-                                    break;
-                                case Constant.LIST_QUESTION:
-                                    break;
-                                case Constant.DEL_QUESTION:
-                                    break;
-                                case Constant.GET_RESULT:
-                                    break;
-
-                            }
-                            break;
-
-
-                        case State.ST_QQ_1:
-                            Optional<Group> byName = groupRepository.findByName(text);
-                            byName.get().setBuffer(userChatId);
-                            groupRepository.save(byName.get());
-                            user.setState(State.ST_QQ_2);
-                            userRepository.save(user);
-                            userMessage = "Kerakli soravnomani tanlang";
-                            execute(userServiceBot.getSurvey(), null);
-                            break;
-                        case State.ST_QQ_2:
-                            Optional<Group> sendgroup = groupRepository.findByBuffer(userChatId);
-                            if (!text.isEmpty()) {
-                                user.setState(State.START_MANAGER);
-                                userRepository.save(user);
-                                for (User student : sendgroup.get().getStudents()) {
-                                    if (student.isActive()) {
-                                        execute1(userServiceBot.survey_comment(text), student.getChatId(), "Sorovnomada qatnashing");
-                                    }
                                 }
-                                sendgroup.get().setBuffer(null);
-                                groupRepository.save(sendgroup.get());
-                                userMessage = "yuborildi";
-                                execute(userServiceBot.startManager(), null);
-                            }
-                            break;
+                                break;
+                            case State.SEND_CONTACT:
+                                if (!text.isEmpty()) {
+                                    userMessage = "PDP ACADEMY";
+                                    user.setState(State.START);
+                                    userRepository.save(user);
+                                    menu();
+                                    break;
+                                }
+                                break;
 
-                        case State.ST_QQ_3:
-                            Optional<Survey> byBuffer1 = surveyRepository.findByBuffer(userChatId);
-                            if (!text.isEmpty()) {
-                                UserResoult userResoult = new UserResoult();
-                                userResoult.setUser(user);
-                                userResoult.setDescription(text);
-                                userResoult.setSavol(byBuffer1.get());
-                                userResoultRepository.save(userResoult);
-                                user.setState(State.START_STUDENT);
-                                userRepository.save(user);
-                                byBuffer1.get().setBuffer(0);
-                                surveyRepository.save(byBuffer1.get());
-                                userMessage = "Javobingiz uchun raxmat";
-                                execute(userServiceBot.Start_Student(), null);
 
-                            }
-                            break;
+                            case State.SUPER_START:
+                                switch (text) {
+                                    case Constant.ADD_ADMIN:
+                                        User admin = new User();
+                                        admin.setState(State.REG_ADMIN_PHONE);
+                                        admin.setRole(Role.ROlE_ADMIN);
+                                        userRepository.save(admin);
+                                        user.setState(State.S_ADD_ADMIN);
+                                        userRepository.save(user);
+                                        userMessage = "raqam yozing";
+                                        execute(null, null);
+                                        break;
 
-                        case State.ST_Q_1:
-                            if (!text.isEmpty()) {
-                                Optional<UserResoult> resoult = userResoultRepository.findByBuffer(userChatId);
-                                resoult.get().setDescription(text);
-                                resoult.get().setBuffer(0);
-                                userResoultRepository.save(resoult.get());
-                                user.setState(State.ST_Q_2);
+                                    case Constant.DEL_ADMIN:
+                                        List<User> byRole = userRepository.findByRole(Role.ROlE_ADMIN);
+                                        if (!byRole.isEmpty()) {
+                                            userMessage = "o`chadigan adminnni tanlang";
+                                            user.setState(State.DELETE_ADMIN_1);
+                                            userRepository.save(user);
+                                            execute(userServiceBot.delateadmins(), null);
+                                            break;
+                                        } else
+                                            userMessage = "admin mavjud emas";
+                                        user.setState(State.SUPER_START);
+                                        userRepository.save(user);
+                                        superMenu();
+
+                                        break;
+
+                                    case Constant.ADD_MANAGER:
+                                        User manager = new User();
+                                        manager.setState(State.REG_MANAGER_PHONE);
+                                        manager.setRole(Role.ROLE_MANAGER);
+                                        userRepository.save(manager);
+                                        user.setState(State.S_ADD_MANAGER);
+                                        userRepository.save(user);
+                                        userMessage = "raqam yozing";
+                                        execute(null, null);
+                                        break;
+
+                                    case Constant.DEL_MANAGER:
+                                        List<User> byRole1 = userRepository.findByRole(Role.ROLE_MANAGER);
+                                        if (!byRole1.isEmpty()) {
+                                            userMessage = "o`chadigan managerni tanlang";
+                                            user.setState(State.DELETE_MANAGER_1);
+                                            userRepository.save(user);
+                                            execute(userServiceBot.delatemanager(), null);
+                                            break;
+                                        } else
+                                            userMessage = "manager mavjud emas";
+                                        user.setState(State.SUPER_START);
+                                        userRepository.save(user);
+                                        superMenu();
+
+                                        break;
+
+
+                                    case State.BACK_MENU:
+
+                                        superMenu();
+                                        break;
+                                }
+                                break;
+
+                            case State.DELETE_ADMIN_1:
+                                if (!text.isEmpty()) {
+                                    if (text.equals(Constant.BACK_MENU)) {
+                                        userMessage = "super menyu";
+                                        user.setState(State.SUPER_START);
+                                        userRepository.save(user);
+                                        superMenu();
+                                        break;
+                                    } else
+                                        user.setState(State.SUPER_START);
+                                    userRepository.save(user);
+                                    Optional<User> byPhoneNumber = userRepository.findByPhoneNumber(text);
+                                    userRepository.delete(byPhoneNumber.get());
+                                    userMessage = "bu admin tugadi";
+                                    superMenu();
+                                    break;
+                                }
+                                break;
+
+                            case State.DELETE_MANAGER_1:
+                                if (!text.isEmpty()) {
+                                    if (text.equals(Constant.BACK_M)) {
+                                        userMessage = "super menyu";
+                                        user.setState(State.SUPER_START);
+                                        userRepository.save(user);
+                                        superMenu();
+                                        break;
+                                    } else
+                                        user.setState(State.SUPER_START);
+                                    userRepository.save(user);
+                                    Optional<User> byPhoneNumber = userRepository.findByPhoneNumber(text);
+                                    userRepository.delete(byPhoneNumber.get());
+                                    userMessage = "bu manager tugadi";
+                                    superMenu();
+                                    break;
+                                }
+                                break;
+
+
+                            case State.S_ADD_ADMIN:
+                                if (!text.isEmpty()) {
+                                    Optional<User> byState = userRepository.findByState(State.REG_ADMIN_PHONE);
+                                    byState.get().setPhoneNumber(text);
+                                    byState.get().setState(State.REG_ADMIN_PHONE_1);
+                                    userRepository.save(byState.get());
+                                    user.setState(State.S_ADD_ADMIN_NAME);
+                                    userRepository.save(user);
+                                    userMessage = "Ismini kiriting";
+                                    execute(null, null);
+                                }
+                                break;
+
+                            case State.S_ADD_ADMIN_NAME:
+                                if (!text.isEmpty()) {
+                                    Optional<User> byState = userRepository.findByState(State.REG_ADMIN_PHONE_1);
+                                    byState.get().setFullName(text);
+                                    byState.get().setState(State.REG_ADMIN_OK);
+                                    userRepository.save(byState.get());
+                                    user.setState(State.SUPER_START);
+                                    userRepository.save(user);
+                                    userMessage = "ok";
+                                }
+                                superMenu();
+                                break;
+
+                            case State.S_ADD_MANAGER:
+                                if (!text.isEmpty()) {
+                                    Optional<User> byState = userRepository.findByState(State.REG_MANAGER_PHONE);
+                                    byState.get().setPhoneNumber(text);
+                                    byState.get().setState(State.REG_MANAGER_PHONE_1);
+                                    userRepository.save(byState.get());
+                                    user.setState(State.S_ADD_MANAGER_NAME);
+                                    userRepository.save(user);
+                                    userMessage = "Ismini kiriting";
+                                    execute(null, null);
+                                }
+                                break;
+
+                            case State.S_ADD_MANAGER_NAME:
+                                if (!text.isEmpty()) {
+                                    Optional<User> byState = userRepository.findByState(State.REG_MANAGER_PHONE_1);
+                                    byState.get().setFullName(text);
+                                    byState.get().setState(State.REG_MANAGER_OK);
+                                    userRepository.save(byState.get());
+                                    user.setState(State.SUPER_START);
+                                    userRepository.save(user);
+                                    userMessage = "ok";
+                                }
+                                superMenu();
+                                break;
+                            case State.START_ADMIN:
+                                switch (text) {
+                                    case Constant.ADD_GROUP:
+                                        userMessage = "Guruh nomini yozing";
+                                        user.setState(State.A_ADD_GROUP);
+                                        userRepository.save(user);
+                                        execute(null, null);
+                                        break;
+                                    case Constant.ADD_STUDENT:
+                                        userMessage = "o`quvchini guruhini belgilang";
+                                        user.setState(State.A_ADD_STUDENT);
+                                        userRepository.save(user);
+                                        execute(userServiceBot.getgroup(), null);
+                                        break;
+                                    case Constant.GET_GROUP:
+                                        userMessage = "Guruhlar royxati";
+                                        user.setState(State.START_ADMIN);
+                                        userRepository.save(user);
+                                        execute(userServiceBot.getgroup(), null);
+                                        break;
+                                    default:
+                                        userMessage = "Menu";
+                                        execute(userServiceBot.addStudent(), null);
+                                        break;
+                                }
+                                break;
+                            case State.A_ADD_GROUP:
+                                if (!text.isEmpty()) {
+                                    Group group = new Group();
+                                    group.setName(text);
+                                    groupRepository.save(group);
+                                    user.setState(State.START_ADMIN);
+                                    userRepository.save(user);
+                                    userMessage = "Guruh qo`shildi";
+                                    execute(userServiceBot.addStudent(), null);
+                                }
+                                break;
+
+
+                            case State.A_ADD_STUDENT:
+                                if (text.equals(Constant.BACK_M)) {
+                                    user.setState(State.START_ADMIN);
+                                    userRepository.save(user);
+                                    userMessage = "Kerakli ishni qiling";
+                                    execute(userServiceBot.addStudent(), null);
+                                    break;
+                                } else if (!text.isEmpty()) {
+                                    Optional<Group> optionalGroup = groupRepository.findByName(text);
+                                    optionalGroup.get().setBuffer(userChatId);
+                                    groupRepository.save(optionalGroup.get());
+                                    userMessage = text + " " + "O`quvchini telefon raqamini kiriting (998...) :";
+                                    user.setState(State.A_ADD_STUDENT_1);
+                                    userRepository.save(user);
+                                    execute(null, null);
+                                }
+                                break;
+
+
+                            case State.A_ADD_STUDENT_1:
+                                String a = text.substring(0, 3);
+
+                                switch (a) {
+                                    case "998":
+                                        Optional<Group> optionalGroup = groupRepository.findByBuffer(userChatId);
+                                        User student = new User();
+                                        student.setPhoneNumber(text);
+                                        student.setRole(Role.ROLE_STUDENT);
+                                        student.setGroup(optionalGroup.get());
+                                        userRepository.save(student);
+                                        userMessage = optionalGroup.get().getName() + " + " + "keyingi telefon raqamini kiriting :";
+                                        execute(userServiceBot.backAdmin(), null);
+                                        break;
+                                    case Constant.BACK_ADMIN:
+                                        userMessage = "Xamma raqamlar qoshildi";
+                                        user.setState(State.START_ADMIN);
+                                        userRepository.save(user);
+                                        Optional<Group> byBufferGroup = groupRepository.findByBuffer(userChatId);
+                                        byBufferGroup.get().setBuffer(null);
+                                        groupRepository.save(byBufferGroup.get());
+                                        execute(userServiceBot.addStudent(), null);
+                                        break;
+                                    default:
+                                        userMessage = "Raqamni togri tering (998......) ";
+                                        execute(null, null);
+                                        break;
+                                }
+                                break;
+
+                            case State.START_MANAGER:
+                                switch (text) {
+                                    case Constant.GET_QUESTION:
+                                        user.setState(State.ST_QQ_1);
+                                        userRepository.save(user);
+                                        userMessage = "Yuboradigan guruhingizni tanlang ";
+                                        execute(userServiceBot.getgroup(), null);
+                                        break;
+                                    case Constant.ADD_QUESTION:
+                                        userMessage = "";
+                                        break;
+                                    case Constant.LIST_QUESTION:
+                                        userMessage = "Barcha sorovlar royxati";
+                                        List<Survey> all = surveyRepository.findAll();
+                                        for (Survey survey : all) {
+                                            send_massage(userChatId, survey.getName());
+                                        }
+                                        execute(userServiceBot.startManager(), null);
+                                        break;
+                                    case Constant.DEL_QUESTION:
+                                        break;
+                                    case Constant.GET_RESULT:
+                                        break;
+
+                                }
+                                break;
+
+
+                            case State.ST_QQ_1:
+                                Optional<Group> byName = groupRepository.findByName(text);
+                                byName.get().setBuffer(userChatId);
+                                groupRepository.save(byName.get());
+                                user.setState(State.ST_QQ_2);
                                 userRepository.save(user);
-                                Optional<Survey> survey = surveyRepository.findById(2);
-                                userMessage = survey.get().getName() + "  \uD83D\uDC47";
-                                execute(null, null);
+                                userMessage = "Kerakli soravnomani tanlang";
+                                execute(userServiceBot.getSurvey(), null);
                                 break;
-                            }
-                            break;
-                        case State.ST_Q_2:
-                            if (!text.isEmpty()) {
-                                Optional<Survey> survey = surveyRepository.findById(2);
-                                UserResoult userResoult = new UserResoult();
-                                userResoult.setUser(user);
-                                userResoult.setSavol(survey.get());
-                                userResoult.setDescription(text);
-                                userResoultRepository.save(userResoult);
-                                user.setState(State.ST_Q_3);
-                                userRepository.save(user);
-                                Optional<Survey> survey3 = surveyRepository.findById(3); // massage
-                                userMessage = survey3.get().getName();
-                                execute(null, null);
+                            case State.ST_QQ_2:
+                                new Thread().start();
+                                Optional<Group> sendgroup = groupRepository.findByBuffer(userChatId);
+                                if (!text.isEmpty()) {
+                                    for (User student : sendgroup.get().getStudents()) {
+                                        if (student.isActive()) {
+                                            execute1(userServiceBot.survey_comment(text), student.getChatId(), "Sorovnomada qatnashing");
+                                        }
+                                    }
+                                    user.setState(State.START_MANAGER);
+                                    userRepository.save(user);
+                                    sendgroup.get().setBuffer(null);
+                                    groupRepository.save(sendgroup.get());
+                                    userMessage = "Sorovnoma yuborildi";
+                                    execute(userServiceBot.startManager(), null);
+                                }
+
                                 break;
-                            }
-                            break;
-                        case State.ST_Q_3:
-                            if (!text.isEmpty()) {
-                                Optional<Survey> survey = surveyRepository.findById(3);
-                                Optional<Survey> massage = surveyRepository.findById(4); // massage
-                                UserResoult userResoult = new UserResoult();
-                                userResoult.setUser(user);
-                                userResoult.setSavol(survey.get());
-                                userResoult.setDescription(text);
-                                userResoultRepository.save(userResoult);
-                                user.setState(State.ST_Q_4);
-                                userRepository.save(user);
-                                userMessage = "Quyidagi bo'limlarni baholab bera olasizmi? \n " + massage.get().getName();
-                                execute(null, userServiceBot.fifeBall());
+
+                            case State.ST_QQ_3:
+                                Optional<Survey> byBuffer1 = surveyRepository.findByBuffer(userChatId);
+                                if (!text.isEmpty()) {
+                                    UserResoult userResoult = new UserResoult();
+                                    userResoult.setUser(user);
+                                    userResoult.setDescription(text);
+                                    userResoult.setSavol(byBuffer1.get());
+                                    userResoultRepository.save(userResoult);
+                                    user.setState(State.START_STUDENT);
+                                    userRepository.save(user);
+                                    byBuffer1.get().setBuffer(0);
+                                    surveyRepository.save(byBuffer1.get());
+                                    userMessage = "Javobingiz uchun raxmat";
+                                    execute(userServiceBot.Start_Student(), null);
+
+                                }
                                 break;
-                            }
-                            break;
-                        case State.ST_Q_10:
-                            if (!text.isEmpty()) {
-                                Optional<Survey> survey1 = surveyRepository.findById(10);
-                                Optional<Survey> massage = surveyRepository.findById(11); // massage
-                                UserResoult userResoult = new UserResoult();
-                                userResoult.setUser(user);
-                                userResoult.setSavol(survey1.get());
-                                userResoult.setDescription(text);
-                                userResoultRepository.save(userResoult);
-                                user.setState(State.ST_Q_11);
-                                userRepository.save(user);
-                                userMessage = massage.get().getName() + " (Iltimos izox yozing)";
-                                execute(null, null);
+
+                            case State.ST_Q_1:
+                                if (!text.isEmpty()) {
+                                    Optional<UserResoult> resoult = userResoultRepository.findByBuffer(userChatId);
+                                    resoult.get().setDescription(text);
+                                    resoult.get().setBuffer(0);
+                                    userResoultRepository.save(resoult.get());
+                                    user.setState(State.ST_Q_2);
+                                    userRepository.save(user);
+                                    Optional<Survey> survey = surveyRepository.findById(2);
+                                    userMessage = survey.get().getName() + "  \uD83D\uDC47";
+                                    execute(null, null);
+                                    break;
+                                }
                                 break;
-                            }
-                            break;
-                        case State.ST_Q_11:
-                            if (!text.isEmpty()) {
-                                Optional<Survey> survey1 = surveyRepository.findById(11);
-                                UserResoult userResoult = new UserResoult();
-                                userResoult.setUser(user);
-                                userResoult.setSavol(survey1.get());
-                                userResoult.setDescription(text);
-                                userResoultRepository.save(userResoult);
-                                user.setState(State.START_STUDENT);
-                                userRepository.save(user);
-                                userMessage = "\uD83D\uDC4D";
-                                execute(userServiceBot.Start_Student(), null);
+                            case State.ST_Q_2:
+                                if (!text.isEmpty()) {
+                                    Optional<Survey> survey = surveyRepository.findById(2);
+                                    UserResoult userResoult = new UserResoult();
+                                    userResoult.setUser(user);
+                                    userResoult.setSavol(survey.get());
+                                    userResoult.setDescription(text);
+                                    userResoultRepository.save(userResoult);
+                                    user.setState(State.ST_Q_3);
+                                    userRepository.save(user);
+                                    Optional<Survey> survey3 = surveyRepository.findById(3); // massage
+                                    userMessage = survey3.get().getName();
+                                    execute(null, null);
+                                    break;
+                                }
                                 break;
-                            }
-                            break;
-                        case State.START_STUDENT:
-                            if (!text.isEmpty()) {
-                                userMessage = " Sizning guruhingiz   " + user.getGroup().getName() + "\uD83C\uDF93" + " \nSizning raqamingiz   " + user.getPhoneNumber() + "☎";
-                                execute(userServiceBot.Start_Student(), null);
+                            case State.ST_Q_3:
+                                if (!text.isEmpty()) {
+                                    Optional<Survey> survey = surveyRepository.findById(3);
+                                    Optional<Survey> massage = surveyRepository.findById(4); // massage
+                                    UserResoult userResoult = new UserResoult();
+                                    userResoult.setUser(user);
+                                    userResoult.setSavol(survey.get());
+                                    userResoult.setDescription(text);
+                                    userResoultRepository.save(userResoult);
+                                    user.setState(State.ST_Q_4);
+                                    userRepository.save(user);
+                                    userMessage = "Quyidagi bo'limlarni baholab bera olasizmi? \n " + massage.get().getName();
+                                    execute(null, userServiceBot.fifeBall());
+                                    break;
+                                } else send_massage(userChatId, "\uD83E\uDD0C");
                                 break;
-                            }
-                            break;
-                    }
+                            case State.ST_Q_10:
+                                if (!text.isEmpty()) {
+                                    Optional<Survey> survey1 = surveyRepository.findById(10);
+                                    Optional<Survey> massage = surveyRepository.findById(11); // massage
+                                    UserResoult userResoult = new UserResoult();
+                                    userResoult.setUser(user);
+                                    userResoult.setSavol(survey1.get());
+                                    userResoult.setDescription(text);
+                                    userResoultRepository.save(userResoult);
+                                    user.setState(State.ST_Q_11);
+                                    userRepository.save(user);
+                                    userMessage = massage.get().getName() + " (Iltimos izox yozing)";
+                                    execute(null, null);
+                                    break;
+                                }
+                                break;
+                            case State.ST_Q_11:
+                                if (!text.isEmpty()) {
+                                    Optional<Survey> survey1 = surveyRepository.findById(11);
+                                    UserResoult userResoult = new UserResoult();
+                                    userResoult.setUser(user);
+                                    userResoult.setSavol(survey1.get());
+                                    userResoult.setDescription(text);
+                                    userResoultRepository.save(userResoult);
+                                    user.setState(State.START_STUDENT);
+                                    userRepository.save(user);
+                                    userMessage = "\uD83D\uDC4D";
+                                    execute(userServiceBot.Start_Student(), null);
+                                    break;
+                                }
+                                break;
+                            case State.START_STUDENT:
+                                if (!text.isEmpty()) {
+                                    userMessage = " Sizning guruhingiz   " + user.getGroup().getName() + "\uD83C\uDF93" + " \nSizning raqamingiz   " + user.getPhoneNumber() + "☎";
+                                    execute(userServiceBot.Start_Student(), null);
+                                    break;
+                                }
+                                break;
+                            default:
+                                send_massage(userChatId, "\uD83E\uDD0C");
+                        }
+                    } else send_massage(userChatId, "/start");
                 }
 
             }
@@ -605,53 +618,51 @@ public class BaseBot extends TelegramLongPollingBot {
             switch (state) {
                 case State.START_STUDENT:
                     Optional<Survey> optional = surveyRepository.findByTitle(call_data);
-                    Type type = optional.get().getType();
-                    switch (type) {
-                        case STANDARD:
-                            Optional<Survey> survey = surveyRepository.findById(1);
-                            userMessage = survey.get().getName() + "  \uD83D\uDC47";
-                            user.setState(State.ST_Q_1);
-                            userRepository.save(user);
-                            UserResoult userResoult = new UserResoult();
-                            userResoult.setUser(user);
-                            userResoult.setBuffer(userChatId);
-                            userResoult.setSavol(survey.get());
-                            userResoultRepository.save(userResoult);
-                            execute(null, null);
-                            break;
-                        case COMMIT:
-                            userMessage = optional.get().getName();
-                            optional.get().setBuffer(userChatId);
-                            surveyRepository.save(optional.get());
-                            user.setState(State.ST_QQ_3);
-                            userRepository.save(user);
-                            execute(null, null);
-                            break;
-                        case TEEN_BAll:
-                            userMessage = optional.get().getName();
-                            optional.get().setBuffer(userChatId);
-                            surveyRepository.save(optional.get());
-                            user.setState(State.ST_QQ_4);
-                            userRepository.save(user);
-                            execute(null, userServiceBot.teenBall());
-                            break;
+                    if (optional.isPresent()) {
+                        Type type = optional.get().getType();
+                        switch (type) {
+                            case STANDARD:
+                                Optional<Survey> survey = surveyRepository.findById(1);
+                                userMessage = survey.get().getName() + "  \uD83D\uDC47";
+                                user.setState(State.ST_Q_1);
+                                userRepository.save(user);
+                                UserResoult userResoult = new UserResoult();
+                                userResoult.setUser(user);
+                                userResoult.setBuffer(userChatId);
+                                userResoult.setSavol(survey.get());
+                                userResoultRepository.save(userResoult);
+                                execute(null, null);
+                                break;
+                            case COMMIT:
+                                userMessage = optional.get().getName();
+                                optional.get().setBuffer(userChatId);
+                                surveyRepository.save(optional.get());
+                                user.setState(State.ST_QQ_3);
+                                userRepository.save(user);
+                                execute(null, null);
+                                break;
+                            case TEEN_BAll:
+                                userMessage = optional.get().getName();
+                                optional.get().setBuffer(userChatId);
+                                surveyRepository.save(optional.get());
+                                user.setState(State.ST_QQ_4);
+                                userRepository.save(user);
+                                execute(null, userServiceBot.teenBall());
+                                break;
 
+                            case FIVE_BALL:
+                                userMessage = optional.get().getName();
+                                optional.get().setBuffer(userChatId);
+                                surveyRepository.save(optional.get());
+                                user.setState(State.ST_QQ_4);
+                                userRepository.save(user);
+                                execute(null, userServiceBot.fifeBall());
+                                break;
 
-
-
-                        case FIVE_BALL:
-                            userMessage = optional.get().getName();
-                            optional.get().setBuffer(userChatId);
-                            surveyRepository.save(optional.get());
-                            user.setState(State.ST_QQ_4);
-                            userRepository.save(user);
-                            execute(null, userServiceBot.fifeBall());
-                            break;
-
-                        default:
-                            userMessage = "\uD83E\uDD0C";
-                            execute(null, null);
-                    }
+                            default:
+                                send_massage(userChatId, "\uD83E\uDD0C");
+                        }
+                    } else send_massage(userChatId, "\uD83E\uDD0C");
                     break;
 
                 case State.ST_QQ_4:
@@ -665,7 +676,7 @@ public class BaseBot extends TelegramLongPollingBot {
                     surveyRepository.save(survey.get());
                     user.setState(State.START_STUDENT);
                     userRepository.save(user);
-                    userMessage="Javobingiz uchun raxmat";
+                    userMessage = "Javobingiz uchun raxmat";
                     execute(userServiceBot.Start_Student(), null);
                     break;
 
@@ -766,10 +777,15 @@ public class BaseBot extends TelegramLongPollingBot {
                     }
                     break;
 
+                default:
+                    send_massage(userChatId, "Qilu qima");
             }
         }
 
     }
+
+
+
 
 
     private void execute(ReplyKeyboardMarkup replyKeyboardMarkup,
@@ -949,4 +965,14 @@ public class BaseBot extends TelegramLongPollingBot {
         }
     }
 
+    private void send_massage(Long chatId, String text) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(text);
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
 }
