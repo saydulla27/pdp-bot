@@ -7,10 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import uz.pdp.pdpbot.entity.Group;
-import uz.pdp.pdpbot.entity.Role;
-import uz.pdp.pdpbot.entity.Survey;
-import uz.pdp.pdpbot.entity.User;
+import uz.pdp.pdpbot.entity.*;
 import uz.pdp.pdpbot.repository.GroupRepository;
 import uz.pdp.pdpbot.repository.SurveyRepository;
 import uz.pdp.pdpbot.repository.UserRepository;
@@ -236,8 +233,7 @@ public class UserServiceBot {
         keyboardRow.add(Constant.GET_QUESTION);
         keyboardRow1.add(Constant.ADD_QUESTION);
         keyboardRow1.add(Constant.LIST_QUESTION);
-        keyboardRow2.add(Constant.DEL_QUESTION);
-        keyboardRow2.add(Constant.GET_RESULT);
+//        keyboardRow2.add(Constant.GET_RESULT);
         keyboardRows.add(keyboardRow);
         keyboardRows.add(keyboardRow1);
         keyboardRows.add(keyboardRow2);
@@ -256,5 +252,26 @@ public class UserServiceBot {
 
         inlineKeyboardMarkup.setKeyboard(Collections.singletonList(keyboardRows));
         return inlineKeyboardMarkup;
+    }
+
+
+    public ReplyKeyboardMarkup getType() {
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+        KeyboardRow keyboardRow = new KeyboardRow();
+        KeyboardRow keyboardRow1 = new KeyboardRow();
+        KeyboardRow keyboardRow2 = new KeyboardRow();
+
+
+        keyboardRow.add(Type.TEEN_BAll.name());
+        keyboardRow1.add(Type.FIVE_BALL.name());
+        keyboardRow2.add(Type.COMMIT.name());
+
+        keyboardRows.add(keyboardRow);
+        keyboardRows.add(keyboardRow1);
+        keyboardRows.add(keyboardRow2);
+
+        replyKeyboardMarkup.setKeyboard(keyboardRows);
+        return replyKeyboardMarkup;
     }
 }

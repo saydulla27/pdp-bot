@@ -24,60 +24,31 @@ public class Dataloder implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
 
-
-
-        Group guruh = new Group();
-        guruh.setName("G11");
-        groupRepository.save(guruh);
-
-        User user3 = new User();
-        user3.setPhoneNumber("998909940735");
-        user3.setRole(Role.ROLE_STUDENT);
-        user3.setGroup(guruh);
-        userRepository.save(user3);
-
-        User user8 = new User();
-        user8.setPhoneNumber("998903709570");
-        user8.setRole(Role.ROLE_STUDENT);
-        user8.setGroup(guruh);
-        userRepository.save(user8);
-
-        User student = new User();
-        student.setPhoneNumber("998917706311");
-        student.setRole(Role.ROlE_ADMIN);
-        userRepository.save(student);
-
         User student12 = new User();
         student12.setPhoneNumber("998946115013");
         student12.setRole(Role.ROLE_MANAGER);
         userRepository.save(student12);
 
 
-        User user1 = new User();
-        user1.setPhoneNumber("998330571996");
-        user1.setRole(Role.ROLE_STUDENT);
-        user1.setGroup(guruh);
-        userRepository.save(user1);
-
         User student1 = new User();
         student1.setPhoneNumber("998338476311");
-        student1.setRole(Role.ROLE_MANAGER);
+        student1.setRole(Role.ROlE_ADMIN);
         userRepository.save(student1);
 
 
         Survey survey = new Survey();
-        survey.setName("Agar PDP Academy o’quvmarkazi bo’lmaganda o’qishingizni aynan qaysi o’quv markazida boshlagan bo’lardingiz? ");
+        survey.setName("Agar PDP Academy o’quv markazi bo’lmaganida, o’qishingizni aynan qaysi o’quv markazida boshlagan bo’lar edingiz? ");
         survey.setType(Type.STANDARD);
         survey.setTitle("standart");
         surveyRepository.save(survey);
 
         Survey survey1 = new Survey();
-        survey1.setName("PDP Academy ni tanlashingizning asosiy 3 ta sababni yozib bera olasizmi? ");
+        survey1.setName("PDP Academy ni tanlashingizning asosiy sabablarini yozib bera olasizmi? ");
         survey1.setType(Type.STANDARD);
         surveyRepository.save(survey1);
 
         Survey survey2 = new Survey();
-        survey2.setName("Bo’sh vaqtlaringizda ITdan tashqari nima bilan shug’ullanishni xush ko’rasiz? (xobilaringiz, qiziqshlaringiz)");
+        survey2.setName("Bo’sh vaqtingizda dasturlashdan tashqari nimalar bilan shug’ullanishni yaxshi ko’rasiz? (xobbi va qiziqishlaringiz)");
         survey2.setType(Type.STANDARD);
         surveyRepository.save(survey2);
 
@@ -103,7 +74,7 @@ public class Dataloder implements CommandLineRunner {
         surveyRepository.save(survey7);
 
         Survey survey8 = new Survey();
-        survey8.setName(" 5. IT bo'lim");
+        survey8.setName(" 5. Texnik ta’minot (Wifi va h.k)");
         survey8.setType(Type.STANDARD);
         surveyRepository.save(survey8);
 
@@ -113,12 +84,12 @@ public class Dataloder implements CommandLineRunner {
         surveyRepository.save(survey9);
 
         Survey survey10 = new Survey();
-        survey10.setName("PDP Academy  nimani o’zgartirish kerak ?");
+        survey10.setName("PDP Academy nimani o’zgartirishi kerak deb o’ylaysiz?");
         survey10.setType(Type.STANDARD);
         surveyRepository.save(survey10);
 
         Survey survey11 = new Survey();
-        survey11.setName("PDP Academy da hech qachon o'zgarmsligi kerak  bo'lgan  bitta  xususiyatni  yozib  qoldirin");
+        survey11.setName("PDP Academy’da hech qachon o’zgarmasligi kerak bo’lgan bitta xususiyatni yozib qoldiring");
         survey11.setType(Type.STANDARD);
         surveyRepository.save(survey11);
 
@@ -155,7 +126,7 @@ public class Dataloder implements CommandLineRunner {
 
 
         Survey survey17 = new Survey();
-        survey17.setName("PDP Academy nimanio’zgartirishkerak ?");
+        survey17.setName("PDP Academy nimani o’zgartirishi kerak ?");
         survey17.setType(Type.COMMIT);
         survey17.setTitle("Pdp_nimani_ozgartirishi");
         surveyRepository.save(survey17);

@@ -36,6 +36,15 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.9</version>
+        </dependency>
+
+
         <dependency>
             <groupId>com.github.xabgesagtx</groupId>
             <artifactId>telegram-spring-boot-starter</artifactId>

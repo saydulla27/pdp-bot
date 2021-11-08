@@ -1,10 +1,13 @@
 package uz.pdp.pdpbot.bot;
 
 import com.sun.jmx.snmp.tasks.ThreadService;
+import lombok.SneakyThrows;
+import org.apache.tomcat.util.net.AprEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
@@ -22,6 +25,7 @@ import uz.pdp.pdpbot.repository.GroupRepository;
 import uz.pdp.pdpbot.repository.SurveyRepository;
 import uz.pdp.pdpbot.repository.UserRepository;
 import uz.pdp.pdpbot.repository.UserResoultRepository;
+import uz.pdp.pdpbot.service.Excell;
 
 
 import java.text.DateFormat;
@@ -41,6 +45,9 @@ public class BaseBot extends TelegramLongPollingBot {
     private Long studentChatId;
     private String userMessage;
     private String studentmassage;
+
+    @Autowired
+    Excell excell;
 
     @Autowired
     UserRepository userRepository;
@@ -66,6 +73,7 @@ public class BaseBot extends TelegramLongPollingBot {
         return botToken;
     }
 
+    @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
         Date date = Calendar.getInstance().getTime();
@@ -85,12 +93,12 @@ public class BaseBot extends TelegramLongPollingBot {
                     Optional<User> byChatId = userRepository.findByChatId(userChatId);
                     if (!byChatId.isPresent()) {
                         User u1 = new User();
-                        if (userChatId == 637495326) {
+                        if (userChatId == 2053911279) {
                             u1.setRole(Role.ROLE_SUPER_ADMIN);
                             u1.setChatId(userChatId);
                             u1.setState(State.SUPER_START);
                             u1.setFullName("Muminov Saydulla");
-                            u1.setPhoneNumber("+998338476311");
+                            u1.setPhoneNumber("998917706311");
                             userMessage = "super admin";
                             superMenu();
 
@@ -107,10 +115,14 @@ public class BaseBot extends TelegramLongPollingBot {
                     Optional<User> byChatId = userRepository.findByChatId(userChatId);
                     Optional<User> byBuffer = userRepository.findByBuffer(userChatId);
                     if (byChatId.isPresent()) {
-
-                        user = byChatId.get();
+                        if (text.equals("/restart")) {
+                            byChatId.get().setState(State.START);
+                            userRepository.save(byChatId.get());
+                            userMessage="restart";
+                            menu();
+                        } else
+                            user = byChatId.get();
                         String state = user.getState();
-
                         switch (state) {
                             case State.START:
                                 switch (text) {
@@ -123,7 +135,13 @@ public class BaseBot extends TelegramLongPollingBot {
                                         break;
 
                                     case Constant.PDP_INFO:
-                                        userMessage = "77777777777";
+                                        userMessage = "PDP IT akademiyasi bo'yicha savollaringiz bormi? \n" +
+                                                "\n" +
+                                                "Unda bizga murojaat qiling :)\n" +
+                                                "\n" +
+                                                "Platforma: pdp.uz\n" +
+                                                "\n" +
+                                                "\uD83D\uDCDE (78) 777-47-47";
                                         menu();
                                         break;
 
@@ -336,7 +354,6 @@ public class BaseBot extends TelegramLongPollingBot {
                                 }
                                 break;
 
-
                             case State.A_ADD_STUDENT:
                                 if (text.equals(Constant.BACK_M)) {
                                     user.setState(State.START_ADMIN);
@@ -395,7 +412,10 @@ public class BaseBot extends TelegramLongPollingBot {
                                         execute(userServiceBot.getgroup(), null);
                                         break;
                                     case Constant.ADD_QUESTION:
-                                        userMessage = "";
+                                        userMessage = "Sorovnoma kiriting ";
+                                        user.setState(State.M_S_1);
+                                        userRepository.save(user);
+                                        execute(null, null);
                                         break;
                                     case Constant.LIST_QUESTION:
                                         userMessage = "Barcha sorovlar royxati";
@@ -413,10 +433,52 @@ public class BaseBot extends TelegramLongPollingBot {
                                 }
                                 break;
 
+                            case State.M_S_1:
+                                if (!text.isEmpty()) {
+                                    Survey survey = new Survey();
+                                    survey.setName(text);
+                                    survey.setBuffer(userChatId);
+                                    surveyRepository.save(survey);
+                                    user.setState(State.M_S_2);
+                                    userRepository.save(user);
+                                    send_massage(userChatId, "So`rovnoma title kiriting ");
+                                }
+                                break;
+                            case State.M_S_2:
+                                Optional<Survey> byBuffer2 = surveyRepository.findByBuffer(userChatId);
+                                if (!text.isEmpty()) {
+                                    byBuffer2.get().setTitle(text);
+                                    surveyRepository.save(byBuffer2.get());
+                                    user.setState(State.M_S_3);
+                                    userRepository.save(user);
+                                    userMessage = "Sorovnoma type ni tanlang";
+                                    execute(userServiceBot.getType(), null);
+                                }
+                                break;
+
+
+                            case State.M_S_3:
+                                Optional<Survey> byBuffer3 = surveyRepository.findByBuffer(userChatId);
+                                if (!text.isEmpty()) {
+                                    byBuffer3.get().setType(Type.valueOf(text));
+                                    byBuffer3.get().setBuffer(0);
+                                    surveyRepository.save(byBuffer3.get());
+                                    user.setState(State.START_MANAGER);
+                                    userRepository.save(user);
+                                    userMessage = "So`rovnoma qoshildi ";
+                                    execute(userServiceBot.startManager(), null);
+                                }
+
+                                break;
 
                             case State.ST_QQ_1:
                                 Optional<Group> byName = groupRepository.findByName(text);
-                                byName.get().setBuffer(userChatId);
+                                if (text.equals("back_m")) {
+                                    user.setState(State.START_MANAGER);
+                                    userRepository.save(user);
+                                    execute(userServiceBot.startManager(), null);
+                                } else
+                                    byName.get().setBuffer(userChatId);
                                 groupRepository.save(byName.get());
                                 user.setState(State.ST_QQ_2);
                                 userRepository.save(user);
@@ -424,22 +486,19 @@ public class BaseBot extends TelegramLongPollingBot {
                                 execute(userServiceBot.getSurvey(), null);
                                 break;
                             case State.ST_QQ_2:
-                                new Thread().start();
-                                Optional<Group> sendgroup = groupRepository.findByBuffer(userChatId);
-                                if (!text.isEmpty()) {
-                                    for (User student : sendgroup.get().getStudents()) {
-                                        if (student.isActive()) {
-                                            execute1(userServiceBot.survey_comment(text), student.getChatId(), "Sorovnomada qatnashing");
-                                        }
-                                    }
+
+                                if (text.equals("back_m")) {
                                     user.setState(State.START_MANAGER);
                                     userRepository.save(user);
-                                    sendgroup.get().setBuffer(null);
-                                    groupRepository.save(sendgroup.get());
-                                    userMessage = "Sorovnoma yuborildi";
+                                    userMessage = "Menu";
                                     execute(userServiceBot.startManager(), null);
-                                }
-
+                                    break;
+                                } else
+                                    new Thread(() -> send(userChatId, text)).start();
+                                user.setState(State.START_MANAGER);
+                                userRepository.save(user);
+                                userMessage = "Sorovnoma yuborildi";
+                                execute(userServiceBot.startManager(), null);
                                 break;
 
                             case State.ST_QQ_3:
@@ -504,7 +563,7 @@ public class BaseBot extends TelegramLongPollingBot {
                                     userMessage = "Quyidagi bo'limlarni baholab bera olasizmi? \n " + massage.get().getName();
                                     execute(null, userServiceBot.fifeBall());
                                     break;
-                                } else send_massage(userChatId, "\uD83E\uDD0C");
+                                } else send_massage(userChatId, "xato");
                                 break;
                             case State.ST_Q_10:
                                 if (!text.isEmpty()) {
@@ -545,13 +604,12 @@ public class BaseBot extends TelegramLongPollingBot {
                                 }
                                 break;
                             default:
-                                send_massage(userChatId, "\uD83E\uDD0C");
+                                send_massage(userChatId, "xato");
                         }
                     } else send_massage(userChatId, "/start");
                 }
 
             }
-
             if (update.getMessage().hasContact()) {
                 String text = update.getMessage().getText();
                 userChatId = update.getMessage().getChatId();
@@ -572,7 +630,7 @@ public class BaseBot extends TelegramLongPollingBot {
                         optionalUser.get().setActive(true);
                         optionalUser.get().setFullName(ism + " " + familya);
                         userRepository.save(optionalUser.get());
-                        userMessage = "Assalom aleykum  " + ism + " " + familya;
+                        userMessage = "Assalom aleykum  " + ism;
                         execute(userServiceBot.addStudent(), null);
                     }
                     if (optionalUser.get().getRole().equals(Role.ROLE_MANAGER)) {
@@ -583,7 +641,7 @@ public class BaseBot extends TelegramLongPollingBot {
                         optionalUser.get().setActive(true);
                         optionalUser.get().setFullName(ism + " " + familya);
                         userRepository.save(optionalUser.get());
-                        userMessage = "Assalom aleykum  " + ism + " " + familya;
+                        userMessage = "Assalom aleykum  " + ism;
                         execute(userServiceBot.startManager(), null);
 
                     }
@@ -595,7 +653,7 @@ public class BaseBot extends TelegramLongPollingBot {
                         optionalUser.get().setActive(true);
                         optionalUser.get().setFullName(ism + " " + familya);
                         userRepository.save(optionalUser.get());
-                        userMessage = "Assalom aleykum  " + ism + " " + familya;
+                        userMessage = "Assalom aleykum  " + ism;
                         execute(userServiceBot.Start_Student(), null);
                     }
 
@@ -660,9 +718,9 @@ public class BaseBot extends TelegramLongPollingBot {
                                 break;
 
                             default:
-                                send_massage(userChatId, "\uD83E\uDD0C");
+                                send_massage(userChatId, "Xato");
                         }
-                    } else send_massage(userChatId, "\uD83E\uDD0C");
+                    } else send_massage(userChatId, "Xato");
                     break;
 
                 case State.ST_QQ_4:
@@ -778,14 +836,11 @@ public class BaseBot extends TelegramLongPollingBot {
                     break;
 
                 default:
-                    send_massage(userChatId, "Qilu qima");
+                    send_massage(userChatId, "Xato");
             }
         }
 
     }
-
-
-
 
 
     private void execute(ReplyKeyboardMarkup replyKeyboardMarkup,
@@ -835,6 +890,17 @@ public class BaseBot extends TelegramLongPollingBot {
         replyKeyboardMarkup.setKeyboard(keyboardRows);
         execute(replyKeyboardMarkup, null);
         return replyKeyboardMarkup;
+    }
+
+    public void send(long id, String text) {
+        Optional<Group> sendgroup = groupRepository.findByBuffer(id);
+        for (User student : sendgroup.get().getStudents()) {
+            if (student.isActive()) {
+                sendgroup.get().setBuffer(null);
+                groupRepository.save(sendgroup.get());
+                execute1(userServiceBot.survey_comment(text), student.getChatId(), "PDP Academy ta’lim sifatini yaxshilash uchun so’rovnomada qatnashing");
+            }
+        }
     }
 
 

@@ -51,10 +51,11 @@ public interface State {
     String ST_QQ_10 = "st_qq_10";
     String ST_QQ_11 = "st_qq_11";
 
-
-
-
-
+    String M_S_1 = "m_s_1";
+    String M_S_2 = "m_s_2";
+    String M_S_3 = "m_s_3";
+    String M_S_4 = "m_s_4";
+    String M_S_5 = "m_s_5";
 
 
 }

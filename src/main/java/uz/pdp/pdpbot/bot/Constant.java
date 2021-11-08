@@ -4,7 +4,7 @@ package uz.pdp.pdpbot.bot;
 public interface Constant {
 
 
-    String WELCOME_TEXT = "Xush kelibsiz!";
+    String WELCOME_TEXT = "Assalomu alaykum, PDP Academy so’rovnoma botidan foydalanish uchun quyidagi tugmalardan birini bosing";
     String SEND_CONTACT = "Raqam yuboring";
     String ADD_ADMIN = "Admin qoshish (Ro`yxatga oluvchi)";
     String ADD_MANAGER = "Manager qoshish (Sorovnomalar uchun)";
@@ -19,9 +19,9 @@ public interface Constant {
     String GET_GROUP = "Guruhlarni korish";
     String BACK_ADMIN = "okk";
     String START_STUDENT = "info";
-    String ADD_QUESTION = "Savol qoshish";
+    String ADD_QUESTION = "Sorovnoma qoshish";
     String DEL_QUESTION = "Savol ochirish";
-    String LIST_QUESTION = "Savollar ro`yhati";
+    String LIST_QUESTION = "Sorovnomalar ro`yhati";
     String GET_RESULT = "Natijalar";
     String GET_QUESTION = "Sorovnomalar yuborish";
 
