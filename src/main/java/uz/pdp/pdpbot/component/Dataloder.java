@@ -25,7 +25,7 @@ public class Dataloder implements CommandLineRunner {
 
 
         User student12 = new User();
-        student12.setPhoneNumber("998946115013");
+        student12.setPhoneNumber("998917706311");
         student12.setRole(Role.ROLE_MANAGER);
         userRepository.save(student12);
 

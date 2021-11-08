@@ -93,12 +93,12 @@ public class BaseBot extends TelegramLongPollingBot {
                     Optional<User> byChatId = userRepository.findByChatId(userChatId);
                     if (!byChatId.isPresent()) {
                         User u1 = new User();
-                        if (userChatId == 2053911279) {
+                        if (userChatId == 110549741) {
                             u1.setRole(Role.ROLE_SUPER_ADMIN);
                             u1.setChatId(userChatId);
                             u1.setState(State.SUPER_START);
-                            u1.setFullName("Muminov Saydulla");
-                            u1.setPhoneNumber("998917706311");
+                            u1.setFullName("Usmon");
+                            u1.setPhoneNumber("998946115013");
                             userMessage = "super admin";
                             superMenu();
 
@@ -117,7 +117,10 @@ public class BaseBot extends TelegramLongPollingBot {
                     if (byChatId.isPresent()) {
                         if (text.equals("/restart")) {
                             byChatId.get().setState(State.START);
+                            byChatId.get().setBuffer(0);
+                            byChatId.get().setChatId(0);
                             userRepository.save(byChatId.get());
+
                             userMessage="restart";
                             menu();
                         } else
