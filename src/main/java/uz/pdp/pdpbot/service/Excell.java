@@ -1,5 +1,6 @@
 package uz.pdp.pdpbot.service;
 
+import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -7,43 +8,34 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-import uz.pdp.pdpbot.entity.User;
 import uz.pdp.pdpbot.entity.UserResoult;
-import uz.pdp.pdpbot.repository.UserRepository;
 import uz.pdp.pdpbot.repository.UserResoultRepository;
 
-
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
-@Component
 public class Excell {
 
     @Autowired
     UserResoultRepository userResoultRepository;
 
-    @Autowired
-    UserRepository userRepository;
 
 
-    private XSSFWorkbook workbook;
+    private XSSFWorkbook workbook= new XSSFWorkbook();
     private XSSFSheet sheet;
     private List<UserResoult> listUsers;
 
-
-    public void UserExcelExporter(List<UserResoult> listUsers) {
+    public Excell(List<UserResoult> listUsers) {
         this.listUsers = listUsers;
-        workbook = new XSSFWorkbook();
     }
 
 
+
+
     private void writeHeaderLine() {
-        sheet = workbook.createSheet("Users");
+        sheet = workbook.createSheet("Use");
 
         Row row = sheet.createRow(0);
 
@@ -53,11 +45,11 @@ public class Excell {
         font.setFontHeight(16);
         style.setFont(font);
 
-        createCell(row, 0, "User ID", style);
-        createCell(row, 1, "phone", style);
-        createCell(row, 2, "Full Name", style);
-        createCell(row, 3, "Roles", style);
-        createCell(row, 4, "Enabled", style);
+        createCell(row, 0, "O`quvchi", style);
+        createCell(row, 1, "Savol", style);
+        createCell(row, 2, "Savol 1", style);
+        createCell(row, 3, "Savol 2", style);
+        createCell(row, 4, "Savol 3 ", style);
 
     }
 
@@ -68,13 +60,15 @@ public class Excell {
             cell.setCellValue((Integer) value);
         } else if (value instanceof Boolean) {
             cell.setCellValue((Boolean) value);
-        } else {
+        }else {
             cell.setCellValue((String) value);
         }
         cell.setCellStyle(style);
     }
 
     private void writeDataLines() {
+
+
         int rowCount = 1;
 
         CellStyle style = workbook.createCellStyle();
@@ -86,25 +80,22 @@ public class Excell {
             Row row = sheet.createRow(rowCount++);
             int columnCount = 0;
 
-            createCell(row, columnCount++, user.getId(), style);
-            createCell(row, columnCount++, user.getUser(), style);
             createCell(row, columnCount++, user.getUser().getFullName(), style);
-            createCell(row, columnCount++, user.getUser().getRole(), style);
-            createCell(row, columnCount++, user.getUser().isActive(), style);
+            createCell(row, columnCount++, user.getDescription(), style);
+            createCell(row, columnCount++, user.getBall(), style);
+            createCell(row, columnCount++, user.getBall(), style);
+            createCell(row, columnCount++, user.getSavol().getName(), style);
 
         }
     }
 
-    public void export() throws IOException, IOException {
+    public void export(String a) throws IOException {
         writeHeaderLine();
-//        writeDataLines();
+        writeDataLines();
 
-        FileOutputStream outputStream = new FileOutputStream("ad.xlsx");
+        FileOutputStream outputStream = new FileOutputStream(a+".xlsx");
         workbook.write(outputStream);
         outputStream.close();
 
-
     }
 }
-
-

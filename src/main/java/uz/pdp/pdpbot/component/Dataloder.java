@@ -8,6 +8,7 @@ import uz.pdp.pdpbot.entity.*;
 import uz.pdp.pdpbot.repository.GroupRepository;
 import uz.pdp.pdpbot.repository.SurveyRepository;
 import uz.pdp.pdpbot.repository.UserRepository;
+import uz.pdp.pdpbot.repository.UserResoultRepository;
 
 @Component
 public class Dataloder implements CommandLineRunner {
@@ -19,6 +20,10 @@ public class Dataloder implements CommandLineRunner {
 
     @Autowired
     SurveyRepository surveyRepository;
+
+
+    @Autowired
+    UserResoultRepository userResoultRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -34,6 +39,16 @@ public class Dataloder implements CommandLineRunner {
         student1.setPhoneNumber("998338476311");
         student1.setRole(Role.ROlE_ADMIN);
         userRepository.save(student1);
+
+        Group group = new Group();
+        group.setName("g11");
+        groupRepository.save(group);
+
+        User student2 = new User();
+        student2.setPhoneNumber("998330571996");
+        student2.setRole(Role.ROLE_STUDENT);
+        student2.setGroup(group);
+        userRepository.save(student2);
 
 
         Survey survey = new Survey();
@@ -130,5 +145,17 @@ public class Dataloder implements CommandLineRunner {
         survey17.setType(Type.COMMIT);
         survey17.setTitle("Pdp_nimani_ozgartirishi");
         surveyRepository.save(survey17);
+
+
+        UserResoult userResoult =  new UserResoult();
+        userResoult.setUser(student2);
+        userResoult.setBall("5");
+        userResoult.setDescription("asdasdasdasda");
+        userResoult.setSavol(survey17);
+        userResoultRepository.save(userResoult);
+
+
     }
+
+
 }

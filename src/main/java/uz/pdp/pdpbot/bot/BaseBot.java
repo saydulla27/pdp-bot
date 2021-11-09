@@ -2,6 +2,9 @@ package uz.pdp.pdpbot.bot;
 
 import com.sun.jmx.snmp.tasks.ThreadService;
 import lombok.SneakyThrows;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.tomcat.util.net.AprEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,8 +49,6 @@ public class BaseBot extends TelegramLongPollingBot {
     private String userMessage;
     private String studentmassage;
 
-    @Autowired
-    Excell excell;
 
     @Autowired
     UserRepository userRepository;
@@ -89,6 +90,11 @@ public class BaseBot extends TelegramLongPollingBot {
                 String ism = update.getMessage().getFrom().getFirstName();
                 String familya = update.getMessage().getFrom().getLastName();
                 if (text.equals("/start")) {
+                    List<UserResoult> all = userResoultRepository.findAll();
+                    Excell excell = new Excell(all);
+                    excell.export("cgfgh");
+                    
+
                     userMessage = Constant.WELCOME_TEXT;
                     Optional<User> byChatId = userRepository.findByChatId(userChatId);
                     if (!byChatId.isPresent()) {
@@ -120,8 +126,7 @@ public class BaseBot extends TelegramLongPollingBot {
                             byChatId.get().setBuffer(0);
                             byChatId.get().setChatId(0);
                             userRepository.save(byChatId.get());
-
-                            userMessage="restart";
+                            userMessage = "restart";
                             menu();
                         } else
                             user = byChatId.get();
@@ -191,7 +196,6 @@ public class BaseBot extends TelegramLongPollingBot {
                                         user.setState(State.SUPER_START);
                                         userRepository.save(user);
                                         superMenu();
-
                                         break;
 
                                     case Constant.ADD_MANAGER:
@@ -1044,4 +1048,6 @@ public class BaseBot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+
+
 }
