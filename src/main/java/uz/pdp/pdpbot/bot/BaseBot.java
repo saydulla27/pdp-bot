@@ -90,11 +90,6 @@ public class BaseBot extends TelegramLongPollingBot {
                 String ism = update.getMessage().getFrom().getFirstName();
                 String familya = update.getMessage().getFrom().getLastName();
                 if (text.equals("/start")) {
-                    List<UserResoult> all = userResoultRepository.findAll();
-                    Excell excell = new Excell(all);
-                    excell.export("cgfgh");
-                    
-
                     userMessage = Constant.WELCOME_TEXT;
                     Optional<User> byChatId = userRepository.findByChatId(userChatId);
                     if (!byChatId.isPresent()) {
@@ -236,7 +231,7 @@ public class BaseBot extends TelegramLongPollingBot {
                             case State.DELETE_ADMIN_1:
                                 if (!text.isEmpty()) {
                                     if (text.equals(Constant.BACK_MENU)) {
-                                        userMessage = "super menyu";
+                                        userMessage = "super menu";
                                         user.setState(State.SUPER_START);
                                         userRepository.save(user);
                                         superMenu();
@@ -246,7 +241,7 @@ public class BaseBot extends TelegramLongPollingBot {
                                     userRepository.save(user);
                                     Optional<User> byPhoneNumber = userRepository.findByPhoneNumber(text);
                                     userRepository.delete(byPhoneNumber.get());
-                                    userMessage = "bu admin tugadi";
+                                    userMessage = "admin delete";
                                     superMenu();
                                     break;
                                 }
@@ -255,7 +250,7 @@ public class BaseBot extends TelegramLongPollingBot {
                             case State.DELETE_MANAGER_1:
                                 if (!text.isEmpty()) {
                                     if (text.equals(Constant.BACK_M)) {
-                                        userMessage = "super menyu";
+                                        userMessage = "super menu";
                                         user.setState(State.SUPER_START);
                                         userRepository.save(user);
                                         superMenu();
@@ -265,7 +260,7 @@ public class BaseBot extends TelegramLongPollingBot {
                                     userRepository.save(user);
                                     Optional<User> byPhoneNumber = userRepository.findByPhoneNumber(text);
                                     userRepository.delete(byPhoneNumber.get());
-                                    userMessage = "bu manager tugadi";
+                                    userMessage = "Manager delete";
                                     superMenu();
                                     break;
                                 }
@@ -435,6 +430,10 @@ public class BaseBot extends TelegramLongPollingBot {
                                     case Constant.DEL_QUESTION:
                                         break;
                                     case Constant.GET_RESULT:
+                                        userMessage = "Guruhni tanlang";
+                                        user.setState(State.M_S_4);
+                                        userRepository.save(user);
+                                        execute(userServiceBot.getgroup(), null);
                                         break;
 
                                 }
@@ -477,6 +476,20 @@ public class BaseBot extends TelegramLongPollingBot {
                                 }
 
                                 break;
+
+                            case State.M_S_4:
+                                if (!text.isEmpty()) {
+                                    List<UserResoult> all = userResoultRepository.findAllByUser_Group_Name(text);
+                                    Excell excell = new Excell(all);
+                                    excell.export(text);
+                                    user.setState(State.START_MANAGER);
+                                    userRepository.save(user);
+                                    execute(userServiceBot.startManager(), null);
+                                }
+
+
+                                break;
+
 
                             case State.ST_QQ_1:
                                 Optional<Group> byName = groupRepository.findByName(text);

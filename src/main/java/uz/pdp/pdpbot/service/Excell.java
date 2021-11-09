@@ -1,25 +1,18 @@
 package uz.pdp.pdpbot.service;
 
-import lombok.AllArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
 import uz.pdp.pdpbot.entity.UserResoult;
-import uz.pdp.pdpbot.repository.UserResoultRepository;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 public class Excell {
-
-    @Autowired
-    UserResoultRepository userResoultRepository;
 
 
 
@@ -45,11 +38,11 @@ public class Excell {
         font.setFontHeight(16);
         style.setFont(font);
 
-        createCell(row, 0, "O`quvchi", style);
-        createCell(row, 1, "Savol", style);
-        createCell(row, 2, "Savol 1", style);
-        createCell(row, 3, "Savol 2", style);
-        createCell(row, 4, "Savol 3 ", style);
+        createCell(row, 0, "Savol", style);
+        createCell(row, 1, "Ball", style);
+        createCell(row, 2, "Javoblar", style);
+        createCell(row, 3, "O`quvchi", style);
+        createCell(row, 4, "Tel_raqami", style);
 
     }
 
@@ -80,11 +73,11 @@ public class Excell {
             Row row = sheet.createRow(rowCount++);
             int columnCount = 0;
 
-            createCell(row, columnCount++, user.getUser().getFullName(), style);
+            createCell(row, columnCount++, user.getSavol().getTitle(), style);
+            createCell(row, columnCount++, user.getBall(), style);
             createCell(row, columnCount++, user.getDescription(), style);
-            createCell(row, columnCount++, user.getBall(), style);
-            createCell(row, columnCount++, user.getBall(), style);
-            createCell(row, columnCount++, user.getSavol().getName(), style);
+            createCell(row, columnCount++, user.getUser().getFullName(), style);
+            createCell(row, columnCount++, user.getUser().getPhoneNumber(), style);
 
         }
     }

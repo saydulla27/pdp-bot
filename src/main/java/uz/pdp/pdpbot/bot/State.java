@@ -56,6 +56,9 @@ public interface State {
     String M_S_3 = "m_s_3";
     String M_S_4 = "m_s_4";
     String M_S_5 = "m_s_5";
+    String M_S_6 = "m_s_6";
+    String M_S_7 = "m_s_7";
+    String M_S_8 = "m_s_8";
 
 
 }

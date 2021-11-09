@@ -11,7 +11,8 @@ import java.util.Optional;
 @Repository
 public interface UserResoultRepository extends JpaRepository<UserResoult, Integer> {
     Optional<UserResoult> findByBuffer(Long chat_id);
-    Optional<UserResoult> findByUserGroup (String group);
-    Optional<UserResoult> findAllBy ();
+    List<UserResoult> findAllByUser_Group_Name(String name);
+
+
 
 }

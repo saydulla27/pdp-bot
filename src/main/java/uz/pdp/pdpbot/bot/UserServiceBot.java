@@ -233,7 +233,7 @@ public class UserServiceBot {
         keyboardRow.add(Constant.GET_QUESTION);
         keyboardRow1.add(Constant.ADD_QUESTION);
         keyboardRow1.add(Constant.LIST_QUESTION);
-//        keyboardRow2.add(Constant.GET_RESULT);
+        keyboardRow2.add(Constant.GET_RESULT);
         keyboardRows.add(keyboardRow);
         keyboardRows.add(keyboardRow1);
         keyboardRows.add(keyboardRow2);

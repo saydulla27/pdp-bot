@@ -34,15 +34,18 @@ public class Dataloder implements CommandLineRunner {
         student12.setRole(Role.ROLE_MANAGER);
         userRepository.save(student12);
 
-
-        User student1 = new User();
-        student1.setPhoneNumber("998338476311");
-        student1.setRole(Role.ROlE_ADMIN);
-        userRepository.save(student1);
-
         Group group = new Group();
         group.setName("g11");
         groupRepository.save(group);
+
+
+        User student1 = new User();
+        student1.setPhoneNumber("998338476311");
+        student1.setRole(Role.ROLE_STUDENT);
+        student1.setGroup(group);
+        userRepository.save(student1);
+
+
 
         User student2 = new User();
         student2.setPhoneNumber("998330571996");
@@ -146,13 +149,27 @@ public class Dataloder implements CommandLineRunner {
         survey17.setTitle("Pdp_nimani_ozgartirishi");
         surveyRepository.save(survey17);
 
-
-        UserResoult userResoult =  new UserResoult();
-        userResoult.setUser(student2);
-        userResoult.setBall("5");
-        userResoult.setDescription("asdasdasdasda");
-        userResoult.setSavol(survey17);
-        userResoultRepository.save(userResoult);
+//
+//        UserResoult userResoult =  new UserResoult();
+//        userResoult.setUser(student2);
+//        userResoult.setBall("5");
+//        userResoult.setDescription("Yomon");
+//        userResoult.setSavol(survey17);
+//        userResoultRepository.save(userResoult);
+//
+//        UserResoult userResoult1 =  new UserResoult();
+//        userResoult1.setUser(student2);
+//        userResoult1.setBall("3");
+//        userResoult1.setDescription("yaxshi");
+//        userResoult1.setSavol(survey15);
+//        userResoultRepository.save(userResoult1);
+//
+//        UserResoult userResoult2 =  new UserResoult();
+//        userResoult2.setUser(student2);
+//        userResoult2.setBall("2");
+//        userResoult2.setDescription("yaxshi");
+//        userResoult2.setSavol(survey14);
+//        userResoultRepository.save(userResoult2);
 
 
     }
