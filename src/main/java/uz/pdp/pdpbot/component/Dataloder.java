@@ -38,6 +38,10 @@ public class Dataloder implements CommandLineRunner {
         group.setName("g11");
         groupRepository.save(group);
 
+        Group group2 = new Group();
+        group2.setName("E9");
+        groupRepository.save(group2);
+
 
         User student1 = new User();
         student1.setPhoneNumber("998338476311");
@@ -46,12 +50,35 @@ public class Dataloder implements CommandLineRunner {
         userRepository.save(student1);
 
 
-
         User student2 = new User();
         student2.setPhoneNumber("998330571996");
         student2.setRole(Role.ROLE_STUDENT);
         student2.setGroup(group);
         userRepository.save(student2);
+
+        User student3 = new User();
+        student3.setPhoneNumber("998970003066");
+        student3.setRole(Role.ROLE_STUDENT);
+        student3.setGroup(group);
+        userRepository.save(student3);
+
+        User student4 = new User();
+        student4.setPhoneNumber("998996921836");
+        student4.setRole(Role.ROLE_STUDENT);
+        student4.setGroup(group2);
+        userRepository.save(student4);
+
+        User student5 = new User();
+        student5.setPhoneNumber("998990674236");
+        student5.setRole(Role.ROLE_STUDENT);
+        student5.setGroup(group2);
+        userRepository.save(student5);
+
+
+
+
+
+
 
 
         Survey survey = new Survey();
@@ -149,27 +176,36 @@ public class Dataloder implements CommandLineRunner {
         survey17.setTitle("Pdp_nimani_ozgartirishi");
         surveyRepository.save(survey17);
 
-//
-//        UserResoult userResoult =  new UserResoult();
-//        userResoult.setUser(student2);
-//        userResoult.setBall("5");
-//        userResoult.setDescription("Yomon");
-//        userResoult.setSavol(survey17);
-//        userResoultRepository.save(userResoult);
-//
-//        UserResoult userResoult1 =  new UserResoult();
-//        userResoult1.setUser(student2);
-//        userResoult1.setBall("3");
-//        userResoult1.setDescription("yaxshi");
-//        userResoult1.setSavol(survey15);
-//        userResoultRepository.save(userResoult1);
-//
-//        UserResoult userResoult2 =  new UserResoult();
-//        userResoult2.setUser(student2);
-//        userResoult2.setBall("2");
-//        userResoult2.setDescription("yaxshi");
-//        userResoult2.setSavol(survey14);
-//        userResoultRepository.save(userResoult2);
+
+        UserResoult userResoult =  new UserResoult();
+        userResoult.setUser(student1);
+        userResoult.setDescription("najot");
+        userResoult.setSavol(survey1);
+        userResoultRepository.save(userResoult);
+
+        UserResoult userResoult1 =  new UserResoult();
+        userResoult1.setUser(student2);
+        userResoult1.setDescription("asus");
+        userResoult1.setSavol(survey1);
+        userResoultRepository.save(userResoult1);
+
+        UserResoult userResoult2 =  new UserResoult();
+        userResoult2.setUser(student3);
+        userResoult2.setDescription("najot");
+        userResoult2.setSavol(survey2);
+        userResoultRepository.save(userResoult2);
+
+        UserResoult userResoult3 =  new UserResoult();
+        userResoult3.setUser(student4);
+        userResoult3.setDescription("najot");
+        userResoult3.setSavol(survey1);
+        userResoultRepository.save(userResoult3);
+
+        UserResoult userResoult4 =  new UserResoult();
+        userResoult4.setUser(student5);
+        userResoult4.setDescription("student5");
+        userResoult4.setSavol(survey2);
+        userResoultRepository.save(userResoult4);
 
 
     }

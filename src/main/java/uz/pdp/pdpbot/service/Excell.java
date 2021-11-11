@@ -6,17 +6,32 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
+import org.telegram.telegrambots.meta.api.methods.GetFile;
+import uz.pdp.pdpbot.entity.Attachment;
 import uz.pdp.pdpbot.entity.UserResoult;
+import uz.pdp.pdpbot.repository.AttachmentRepository;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.activation.FileDataSource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.List;
 
 public class Excell {
 
+    @Autowired
+    AttachmentRepository attachmentRepository;
 
 
-    private XSSFWorkbook workbook= new XSSFWorkbook();
+    private XSSFWorkbook workbook = new XSSFWorkbook();
     private XSSFSheet sheet;
     private List<UserResoult> listUsers;
 
@@ -25,10 +40,8 @@ public class Excell {
     }
 
 
-
-
     private void writeHeaderLine() {
-        sheet = workbook.createSheet("Use");
+        sheet = workbook.createSheet("javoblar");
 
         Row row = sheet.createRow(0);
 
@@ -53,7 +66,7 @@ public class Excell {
             cell.setCellValue((Integer) value);
         } else if (value instanceof Boolean) {
             cell.setCellValue((Boolean) value);
-        }else {
+        } else {
             cell.setCellValue((String) value);
         }
         cell.setCellStyle(style);
@@ -73,7 +86,7 @@ public class Excell {
             Row row = sheet.createRow(rowCount++);
             int columnCount = 0;
 
-            createCell(row, columnCount++, user.getSavol().getTitle(), style);
+            createCell(row, columnCount++, user.getSavol().getName(), style);
             createCell(row, columnCount++, user.getBall(), style);
             createCell(row, columnCount++, user.getDescription(), style);
             createCell(row, columnCount++, user.getUser().getFullName(), style);
@@ -86,9 +99,16 @@ public class Excell {
         writeHeaderLine();
         writeDataLines();
 
-        FileOutputStream outputStream = new FileOutputStream(a+".xlsx");
+        File compressFile = null;
+        File file = new File(a + ".xlsx");
+        OutputStream outputStream = new FileOutputStream(file);
         workbook.write(outputStream);
         outputStream.close();
 
     }
+
+
 }
+
+//    Excell excell = new Excell(all);
+//   excell.export(text);

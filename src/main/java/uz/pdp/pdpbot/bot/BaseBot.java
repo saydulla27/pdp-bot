@@ -9,11 +9,14 @@ import org.apache.tomcat.util.net.AprEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.objects.Document;
+import org.telegram.telegrambots.meta.api.objects.File;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
@@ -23,17 +26,20 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.api.objects.stickers.Sticker;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import uz.pdp.pdpbot.controller.Resultcontroller;
 import uz.pdp.pdpbot.entity.*;
-import uz.pdp.pdpbot.repository.GroupRepository;
-import uz.pdp.pdpbot.repository.SurveyRepository;
-import uz.pdp.pdpbot.repository.UserRepository;
-import uz.pdp.pdpbot.repository.UserResoultRepository;
+import uz.pdp.pdpbot.repository.*;
 import uz.pdp.pdpbot.service.Excell;
 
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static java.awt.Color.orange;
 
 @Component
 public class BaseBot extends TelegramLongPollingBot {
@@ -63,6 +69,14 @@ public class BaseBot extends TelegramLongPollingBot {
 
     @Autowired
     UserResoultRepository userResoultRepository;
+
+
+    @Autowired
+    AttachmentRepository attachmentRepository;
+
+    @Autowired
+    Resultcontroller resultcontroller;
+
 
     @Override
     public String getBotUsername() {
@@ -479,11 +493,10 @@ public class BaseBot extends TelegramLongPollingBot {
 
                             case State.M_S_4:
                                 if (!text.isEmpty()) {
-                                    List<UserResoult> all = userResoultRepository.findAllByUser_Group_Name(text);
-                                    Excell excell = new Excell(all);
-                                    excell.export(text);
+                                    new Thread(() -> SendResult(text)).start();
                                     user.setState(State.START_MANAGER);
                                     userRepository.save(user);
+                                    userMessage = "Natijalar guruhga yuborildi";
                                     execute(userServiceBot.startManager(), null);
                                 }
 
@@ -687,6 +700,7 @@ public class BaseBot extends TelegramLongPollingBot {
                 }
             }
 
+
         } else if (update.hasCallbackQuery()) {
             userChatId = update.getCallbackQuery().getMessage().getChatId();
             String call_data = update.getCallbackQuery().getData();
@@ -820,6 +834,7 @@ public class BaseBot extends TelegramLongPollingBot {
                         userMessage = massage.get().getName();
                         execute(null, userServiceBot.fifeBall());
                         break;
+
                     }
                     break;
                 case State.ST_Q_8:
@@ -1062,5 +1077,49 @@ public class BaseBot extends TelegramLongPollingBot {
         }
     }
 
+    public void SendResult(String group) {
+        List<UserResoult> user_group_name = userResoultRepository.findAllByUser_Group_Name(group);
+        String savol = "";
+
+        for (UserResoult userResoult : user_group_name) {
+            if (!savol.equals(userResoult.getSavol().getName())) {
+                savol = userResoult.getSavol().getName();
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.
+                        append("<span style=\"color:blue\">foo</span>").
+                        append("\n").
+                        append("<b>"+group+"</b>" + "<b> => guruhining javoblari</b>").
+                        append("\n").
+                        append("Savol   " + userResoult.getSavol().getName()).
+                        append("\n");
+                List<UserResoult> savolName = userResoultRepository.findAllBySavol_Name(savol);
+                for (UserResoult resoult : savolName) {
+                    if (resoult.getUser().getGroup().getName().equals(group)) {
+                        stringBuilder.
+                                append("\n").
+                                append("Tel   " + resoult.getUser().getPhoneNumber()).
+                                append("\n").
+                                append("Javob   " + resoult.getDescription()).
+                                append("\n").
+                                append("\n");
+                    }
+                }
+
+                SendMessage sendMessage = new SendMessage();
+                sendMessage.setChatId((long) -764838797);
+                sendMessage.setText(String.valueOf(stringBuilder));
+                sendMessage.setParseMode("HTML");
+                try {
+                    execute(sendMessage);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+        }
+
+
+    }
 
 }
