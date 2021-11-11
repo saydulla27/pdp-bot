@@ -5,7 +5,7 @@ public interface Constant {
 
 
     String WELCOME_TEXT = "Assalomu alaykum, PDP Academy so’rovnoma botidan foydalanish uchun quyidagi tugmalardan birini bosing";
-    String SEND_CONTACT = "Raqam yuboring";
+    String SEND_CONTACT = "Raqam yuboring   \uD83D\uDCF2";
     String ADD_ADMIN = "Admin qoshish (Ro`yxatga oluvchi)";
     String ADD_MANAGER = "Manager qoshish (Sorovnomalar uchun)";
     String DEL_MANAGER = "Manager o`chirish";

@@ -89,7 +89,7 @@ public class UserServiceBot {
         KeyboardRow keyboardRow = new KeyboardRow();
         KeyboardRow keyboardRow1 = new KeyboardRow();
         keyboardRow.add(new KeyboardButton(Constant.SEND_CONTACT).setRequestContact(true));
-        keyboardRow1.add(new KeyboardButton("Bosh menu"));
+        keyboardRow1.add(new KeyboardButton("Bosh menu   \uD83C\uDFE0 "));
         keyboardRows.add(keyboardRow);
         keyboardRows.add(keyboardRow1);
         replyKeyboardMarkup.setKeyboard(keyboardRows);

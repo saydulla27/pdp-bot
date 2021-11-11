@@ -1,45 +1,26 @@
 package uz.pdp.pdpbot.bot;
 
-import com.sun.jmx.snmp.tasks.ThreadService;
 import lombok.SneakyThrows;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.tomcat.util.net.AprEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendDocument;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
-import org.telegram.telegrambots.meta.api.objects.Document;
-import org.telegram.telegrambots.meta.api.objects.File;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import org.telegram.telegrambots.meta.api.objects.stickers.Sticker;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import uz.pdp.pdpbot.controller.Resultcontroller;
 import uz.pdp.pdpbot.entity.*;
 import uz.pdp.pdpbot.repository.*;
-import uz.pdp.pdpbot.service.Excell;
 
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static java.awt.Color.orange;
 
 @Component
 public class BaseBot extends TelegramLongPollingBot {
@@ -51,9 +32,7 @@ public class BaseBot extends TelegramLongPollingBot {
     String username;
 
     private Long userChatId;
-    private Long studentChatId;
     private String userMessage;
-    private String studentmassage;
 
 
     @Autowired
@@ -96,7 +75,6 @@ public class BaseBot extends TelegramLongPollingBot {
         String strDate = dateFormat.format(date);
         User client = null;
         User user = null;
-        String delete = null;
         if (update.hasMessage()) {
             if (update.getMessage().hasText()) {
                 userChatId = update.getMessage().getChatId();
@@ -128,7 +106,6 @@ public class BaseBot extends TelegramLongPollingBot {
 
                 } else {
                     Optional<User> byChatId = userRepository.findByChatId(userChatId);
-                    Optional<User> byBuffer = userRepository.findByBuffer(userChatId);
                     if (byChatId.isPresent()) {
                         if (text.equals("/restart")) {
                             byChatId.get().setState(State.START);
@@ -144,7 +121,7 @@ public class BaseBot extends TelegramLongPollingBot {
                             case State.START:
                                 switch (text) {
                                     case Constant.PDP_SEND_CONTACT:
-                                        userMessage = "Raqam yuborish tugmasini bosing";
+                                        userMessage = "Raqam yuborish tugmasini bosing  ⤵️";
                                         user.setState(State.SEND_CONTACT);
                                         user.setBuffer(userChatId);
                                         userRepository.save(user);
@@ -156,9 +133,9 @@ public class BaseBot extends TelegramLongPollingBot {
                                                 "\n" +
                                                 "Unda bizga murojaat qiling :)\n" +
                                                 "\n" +
-                                                "Platforma: pdp.uz\n" +
-                                                "\n" +
-                                                "\uD83D\uDCDE (78) 777-47-47";
+                                                "\uD83C\uDF10     www.pdp.uz" +
+                                                "\n" + "\n" +
+                                                "\uD83D\uDCDE   (78) 777-47-47";
                                         menu();
                                         break;
 
@@ -170,7 +147,7 @@ public class BaseBot extends TelegramLongPollingBot {
                                 break;
                             case State.SEND_CONTACT:
                                 if (!text.isEmpty()) {
-                                    userMessage = "PDP ACADEMY";
+                                    userMessage = "Iltimos raqam yuborish  tugmasidan foydalaning";
                                     user.setState(State.START);
                                     userRepository.save(user);
                                     menu();
@@ -1086,22 +1063,27 @@ public class BaseBot extends TelegramLongPollingBot {
                 savol = userResoult.getSavol().getName();
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.
-                        append("<span style=\"color:blue\">foo</span>").
+                        append("Guruh " + "<b>" + group + "</b>").
                         append("\n").
-                        append("<b>"+group+"</b>" + "<b> => guruhining javoblari</b>").
                         append("\n").
-                        append("Savol   " + userResoult.getSavol().getName()).
+                        append("❓ " + "<b>" + userResoult.getSavol().getName() + "</b>").
                         append("\n");
                 List<UserResoult> savolName = userResoultRepository.findAllBySavol_Name(savol);
+
                 for (UserResoult resoult : savolName) {
+                    String ball = resoult.getBall();
                     if (resoult.getUser().getGroup().getName().equals(group)) {
                         stringBuilder.
                                 append("\n").
-                                append("Tel   " + resoult.getUser().getPhoneNumber()).
+                                append("\uD83D\uDC68\u200D\uD83D\uDCBB " + resoult.getUser().getFullName() + "     \uD83D\uDCDE " + "+" + resoult.getUser().getPhoneNumber()).
                                 append("\n").
-                                append("Javob   " + resoult.getDescription()).
+                                append("\uD83D\uDDE3" + resoult.getDescription()).
                                 append("\n").
-                                append("\n");
+                                append("\uD83D\uDCC8 " + ball).
+                                append("\n").
+                                append("============================");
+
+
                     }
                 }
 

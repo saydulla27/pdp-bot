@@ -38,21 +38,20 @@ public class Dataloder implements CommandLineRunner {
         group.setName("g11");
         groupRepository.save(group);
 
-        Group group2 = new Group();
-        group2.setName("E9");
-        groupRepository.save(group2);
 
 
         User student1 = new User();
         student1.setPhoneNumber("998338476311");
         student1.setRole(Role.ROLE_STUDENT);
         student1.setGroup(group);
+        student1.setFullName("Saydulla");
         userRepository.save(student1);
 
 
         User student2 = new User();
         student2.setPhoneNumber("998330571996");
         student2.setRole(Role.ROLE_STUDENT);
+        student2.setFullName("Abdulla");
         student2.setGroup(group);
         userRepository.save(student2);
 
@@ -65,18 +64,14 @@ public class Dataloder implements CommandLineRunner {
         User student4 = new User();
         student4.setPhoneNumber("998996921836");
         student4.setRole(Role.ROLE_STUDENT);
-        student4.setGroup(group2);
+        student4.setGroup(group);
         userRepository.save(student4);
 
         User student5 = new User();
         student5.setPhoneNumber("998990674236");
         student5.setRole(Role.ROLE_STUDENT);
-        student5.setGroup(group2);
+        student5.setGroup(group);
         userRepository.save(student5);
-
-
-
-
 
 
 
@@ -179,7 +174,7 @@ public class Dataloder implements CommandLineRunner {
 
         UserResoult userResoult =  new UserResoult();
         userResoult.setUser(student1);
-        userResoult.setDescription("najot");
+        userResoult.setBall("6");
         userResoult.setSavol(survey1);
         userResoultRepository.save(userResoult);
 
@@ -191,7 +186,7 @@ public class Dataloder implements CommandLineRunner {
 
         UserResoult userResoult2 =  new UserResoult();
         userResoult2.setUser(student3);
-        userResoult2.setDescription("najot");
+        userResoult2.setDescription("najotasdfsdfsdfsdfasdfsdfsdfsaf");
         userResoult2.setSavol(survey2);
         userResoultRepository.save(userResoult2);
 
