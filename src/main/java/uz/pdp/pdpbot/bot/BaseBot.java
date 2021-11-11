@@ -663,7 +663,7 @@ public class BaseBot extends TelegramLongPollingBot {
                         optionalUser.get().setActive(true);
                         optionalUser.get().setFullName(ism + " " + familya);
                         userRepository.save(optionalUser.get());
-                        userMessage = "Assalom aleykum  " + ism;
+                        userMessage = "\uD83D\uDC4B  " + ism+"\n"+"So`rovnomalarni kuting va faol qatnashing ";
                         execute(userServiceBot.Start_Student(), null);
                     }
 
