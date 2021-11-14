@@ -2,6 +2,7 @@ package uz.pdp.pdpbot.bot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -168,7 +169,6 @@ public class UserServiceBot {
         return inlineKeyboardMarkup;
     }
 
-
     public InlineKeyboardMarkup teenBall() {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
 
@@ -211,7 +211,6 @@ public class UserServiceBot {
         return inlineKeyboardMarkup;
     }
 
-
     public ReplyKeyboardMarkup Start_Student() {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRows = new ArrayList<>();
@@ -221,7 +220,6 @@ public class UserServiceBot {
         replyKeyboardMarkup.setKeyboard(keyboardRows);
         return replyKeyboardMarkup;
     }
-
 
     public ReplyKeyboardMarkup startManager() {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
@@ -242,18 +240,19 @@ public class UserServiceBot {
         return replyKeyboardMarkup;
     }
 
-
     public InlineKeyboardMarkup survey_comment(String call) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+
         List<InlineKeyboardButton> keyboardRows = new ArrayList<>();
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-        inlineKeyboardButton.setText("Sorovnomadan o`tish").setCallbackData(call);
+
+        inlineKeyboardButton.setText("So`rovnomadan o`tish").setCallbackData(call);
+
         keyboardRows.add(inlineKeyboardButton);
 
         inlineKeyboardMarkup.setKeyboard(Collections.singletonList(keyboardRows));
         return inlineKeyboardMarkup;
     }
-
 
     public ReplyKeyboardMarkup getType() {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();

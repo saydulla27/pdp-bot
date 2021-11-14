@@ -15,6 +15,7 @@ public class Survey {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    private String info;
 
     @Enumerated(EnumType.STRING)
     private Type type;

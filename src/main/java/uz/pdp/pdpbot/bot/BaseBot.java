@@ -6,9 +6,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -512,17 +517,13 @@ public class BaseBot extends TelegramLongPollingBot {
                                 break;
 
                             case State.ST_QQ_3:
-                                Optional<Survey> byBuffer1 = surveyRepository.findByBuffer(userChatId);
+                                Optional<UserResoult> resoult1 = userResoultRepository.findByBuffer(userChatId);
                                 if (!text.isEmpty()) {
-                                    UserResoult userResoult = new UserResoult();
-                                    userResoult.setUser(user);
-                                    userResoult.setDescription(text);
-                                    userResoult.setSavol(byBuffer1.get());
-                                    userResoultRepository.save(userResoult);
+                                    resoult1.get().setDescription(text);
+                                    resoult1.get().setBuffer(0);
+                                    userResoultRepository.save(resoult1.get());
                                     user.setState(State.START_STUDENT);
                                     userRepository.save(user);
-                                    byBuffer1.get().setBuffer(0);
-                                    surveyRepository.save(byBuffer1.get());
                                     userMessage = "Javobingiz uchun raxmat";
                                     execute(userServiceBot.Start_Student(), null);
 
@@ -663,20 +664,19 @@ public class BaseBot extends TelegramLongPollingBot {
                         optionalUser.get().setActive(true);
                         optionalUser.get().setFullName(ism + " " + familya);
                         userRepository.save(optionalUser.get());
-                        userMessage = "\uD83D\uDC4B  " + ism+"\n"+"So`rovnomalarni kuting va faol qatnashing ";
+                        userMessage = "\uD83D\uDC4B  " + ism + "\n" + "So`rovnomalarni kuting va faol qatnashing ";
                         execute(userServiceBot.Start_Student(), null);
                     }
 
                 } else {
                     Optional<User> byState = userRepository.findByState(State.SEND_CONTACT);
                     byState.get().setState(State.START);
-                    userMessage = "PDP da mexmonsiz";
+                    userMessage = "PDP talabasi emassiz !!!";
                     byState.get().setChatId(userChatId);
                     userRepository.save(byState.get());
                     menu();
                 }
             }
-
 
         } else if (update.hasCallbackQuery()) {
             userChatId = update.getCallbackQuery().getMessage().getChatId();
@@ -687,6 +687,7 @@ public class BaseBot extends TelegramLongPollingBot {
             switch (state) {
                 case State.START_STUDENT:
                     Optional<Survey> optional = surveyRepository.findByTitle(call_data);
+                    long message_id = update.getCallbackQuery().getMessage().getMessageId();
                     if (optional.isPresent()) {
                         Type type = optional.get().getType();
                         switch (type) {
@@ -701,31 +702,43 @@ public class BaseBot extends TelegramLongPollingBot {
                                 userResoult.setSavol(survey.get());
                                 userResoultRepository.save(userResoult);
                                 execute(null, null);
+                                Remove(message_id);
                                 break;
                             case COMMIT:
                                 userMessage = optional.get().getName();
-                                optional.get().setBuffer(userChatId);
-                                surveyRepository.save(optional.get());
+                                UserResoult userResoult2 = new UserResoult();
+                                userResoult2.setBuffer(userChatId);
+                                userResoult2.setSavol(optional.get());
+                                userResoult2.setUser(user);
+                                userResoultRepository.save(userResoult2);
                                 user.setState(State.ST_QQ_3);
                                 userRepository.save(user);
                                 execute(null, null);
+                                Remove(message_id);
                                 break;
                             case TEEN_BAll:
-                                userMessage = optional.get().getName();
-                                optional.get().setBuffer(userChatId);
-                                surveyRepository.save(optional.get());
+                                userMessage = "<b>" + optional.get().getName() + "</b>";
+                                UserResoult userResoult6 = new UserResoult();
+                                userResoult6.setBuffer(userChatId);
+                                userResoult6.setSavol(optional.get());
+                                userResoult6.setUser(user);
+                                userResoultRepository.save(userResoult6);
                                 user.setState(State.ST_QQ_4);
                                 userRepository.save(user);
                                 execute(null, userServiceBot.teenBall());
+                                Remove(message_id);
                                 break;
-
                             case FIVE_BALL:
-                                userMessage = optional.get().getName();
-                                optional.get().setBuffer(userChatId);
-                                surveyRepository.save(optional.get());
+                                userMessage = "<b>" + optional.get().getName() + "</b>" + "\n" + optional.get().getInfo();
+                                UserResoult userResoult4 = new UserResoult();
+                                userResoult4.setBuffer(userChatId);
+                                userResoult4.setSavol(optional.get());
+                                userResoult4.setUser(user);
+                                userResoultRepository.save(userResoult4);
                                 user.setState(State.ST_QQ_4);
                                 userRepository.save(user);
                                 execute(null, userServiceBot.fifeBall());
+                                Remove(message_id);
                                 break;
 
                             default:
@@ -735,14 +748,11 @@ public class BaseBot extends TelegramLongPollingBot {
                     break;
 
                 case State.ST_QQ_4:
-                    Optional<Survey> survey = surveyRepository.findByBuffer(userChatId);
-                    UserResoult userResoult2 = new UserResoult();
-                    userResoult2.setUser(user);
-                    userResoult2.setSavol(survey.get());
-                    userResoult2.setBall(call_data);
-                    userResoultRepository.save(userResoult2);
-                    survey.get().setBuffer(0);
-                    surveyRepository.save(survey.get());
+                    Optional<UserResoult> resoult = userResoultRepository.findByBuffer(userChatId);
+                    resoult.get().setUser(user);
+                    resoult.get().setBall(call_data);
+                    resoult.get().setBuffer(0);
+                    userResoultRepository.save(resoult.get());
                     user.setState(State.START_STUDENT);
                     userRepository.save(user);
                     userMessage = "Javobingiz uchun raxmat";
@@ -860,6 +870,7 @@ public class BaseBot extends TelegramLongPollingBot {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChatId);
         sendMessage.setText(userMessage);
+        sendMessage.setParseMode("HTML");
         if (replyKeyboardMarkup != null) {
             sendMessage.setReplyMarkup(replyKeyboardMarkup);
             replyKeyboardMarkup.setResizeKeyboard(true);
@@ -937,97 +948,6 @@ public class BaseBot extends TelegramLongPollingBot {
 
     }
 
-    public ReplyKeyboardMarkup deleteUser() {
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        List<KeyboardRow> keyboardRows = new ArrayList<>();
-        KeyboardRow keyboardRow = new KeyboardRow();
-        KeyboardRow keyboardRow1 = new KeyboardRow();
-        keyboardRow.add("O`chirish");
-        keyboardRow1.add("orqaga qaytish");
-        keyboardRows.add(keyboardRow);
-        keyboardRows.add(keyboardRow1);
-        replyKeyboardMarkup.setKeyboard(keyboardRows);
-
-        return replyKeyboardMarkup;
-    }
-
-    public InlineKeyboardMarkup abs() {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-        inlineKeyboardButton1.setText("a");
-        inlineKeyboardButton1.setCallbackData("Button \"a\" saydulla");
-        inlineKeyboardButton2.setText("b");
-        inlineKeyboardButton2.setCallbackData("Button \"Тык2\" uabydulla");
-        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-        List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
-        keyboardButtonsRow1.add(inlineKeyboardButton1);
-        keyboardButtonsRow1.add(new InlineKeyboardButton().setText("s").setCallbackData("sss"));
-        keyboardButtonsRow2.add(inlineKeyboardButton2);
-        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        rowList.add(keyboardButtonsRow1);
-        rowList.add(keyboardButtonsRow2);
-        inlineKeyboardMarkup.setKeyboard(rowList);
-        execute(null, inlineKeyboardMarkup);
-        return inlineKeyboardMarkup;
-    }
-
-    public InlineKeyboardMarkup line() {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-        inlineKeyboardButton1.setText("Тык");
-        inlineKeyboardButton1.setCallbackData("Button \"Тык\" has been pressed");
-        inlineKeyboardButton2.setText("Тык2");
-        inlineKeyboardButton2.setCallbackData("Button \"Тык2\" has been pressed");
-        List<InlineKeyboardButton> keyboardButtonsRow1 = new ArrayList<>();
-        List<InlineKeyboardButton> keyboardButtonsRow2 = new ArrayList<>();
-        keyboardButtonsRow1.add(inlineKeyboardButton1);
-        keyboardButtonsRow1.add(new InlineKeyboardButton().setText("Fi4a").setCallbackData("CallFi4a"));
-        keyboardButtonsRow2.add(inlineKeyboardButton2);
-        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
-        rowList.add(keyboardButtonsRow1);
-        rowList.add(keyboardButtonsRow2);
-        inlineKeyboardMarkup.setKeyboard(rowList);
-        execute(null, inlineKeyboardMarkup);
-        return inlineKeyboardMarkup;
-    }
-
-    public ReplyKeyboardMarkup test(String name) {
-        userMessage = name;
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        List<KeyboardRow> keyboardRows = new ArrayList<>();
-        KeyboardRow keyboardRow = new KeyboardRow();
-        keyboardRow.add("ok");
-        keyboardRows.add(keyboardRow);
-        replyKeyboardMarkup.setKeyboard(keyboardRows);
-        execute(replyKeyboardMarkup, null);
-        return replyKeyboardMarkup;
-    }
-
-
-    public InlineKeyboardMarkup test_2() {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<InlineKeyboardButton> keyboardRows = new ArrayList<>();
-        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
-        InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
-        inlineKeyboardButton.setText("1").setCallbackData("a");
-        inlineKeyboardButton1.setText("2").setCallbackData("b");
-        inlineKeyboardButton2.setText("3").setCallbackData("s");
-        inlineKeyboardButton3.setText("4").setCallbackData("d");
-        inlineKeyboardButton4.setText("5").setCallbackData("e");
-
-        keyboardRows.add(inlineKeyboardButton);
-        keyboardRows.add(inlineKeyboardButton1);
-        keyboardRows.add(inlineKeyboardButton2);
-        keyboardRows.add(inlineKeyboardButton3);
-        keyboardRows.add(inlineKeyboardButton4);
-        inlineKeyboardMarkup.setKeyboard(Collections.singletonList(keyboardRows));
-        return inlineKeyboardMarkup;
-    }
 
     private void sender(InlineKeyboardMarkup inlineKeyboardMarkup, Long userChatId, String name) {
         SendMessage sendMessage = new SendMessage();
@@ -1104,4 +1024,17 @@ public class BaseBot extends TelegramLongPollingBot {
 
     }
 
+    private void Remove(Long message_id) {
+        EditMessageText new_message = new EditMessageText()
+                .setChatId(userChatId)
+                .setMessageId(Math.toIntExact(message_id))
+                .setParseMode("HTML")
+                .setText("<b>Sizning javobingiz biz uchun muhim</b>");
+
+        try {
+            execute(new_message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -56,7 +56,7 @@ public class Dataloder implements CommandLineRunner {
         userRepository.save(student2);
 
         User student3 = new User();
-        student3.setPhoneNumber("998970003066");
+        student3.setPhoneNumber("998973451445");
         student3.setRole(Role.ROLE_STUDENT);
         student3.setGroup(group);
         userRepository.save(student3);
@@ -137,18 +137,21 @@ public class Dataloder implements CommandLineRunner {
         survey12.setName("Mentoringizning dars bo'yicha bilim darajasini baholang.");
         survey12.setType(Type.FIVE_BALL);
         survey12.setTitle("Mentor_darsini_baxolash");
+        survey12.setInfo("\n1 – Bilimlari yetarli emas \n2 – Bilimlari pastroq \n3 – Bilimlari o’rta darajada \n4 – Bilimlari yetarli \n5 – Bilimlari juda ham kuchli \n");
         surveyRepository.save(survey12);
 
         Survey survey13 = new Survey();
         survey13.setName("Mentoringizning tushuntirib bera olish darajasini baholang.");
         survey13.setType(Type.FIVE_BALL);
         survey13.setTitle("Mentor_tushuntirishini_baxolash");
+        survey13.setInfo("\n1 – Umuman tushuntirib bera olmaydilar  \n2 – Tushuntirib berishga qiynaladilar \n3 – O’rtacha darajada tushuntirib bera oladilar \n4 – Yaxshi tushuntirib bera oladilar \n5 – Juda yaxshi tushuntirib beraoladi \n");
         surveyRepository.save(survey13);
 
         Survey survey14 = new Survey();
-        survey14.setName("O’quv programmasidagi berilgan ma’lumotlarnig foydalilik va tushunarlilik darajasini baholang.           ");
+        survey14.setName("O’quv programmasidagi berilgan ma’lumotlarnig foydalilik va tushunarlilik darajasini baholang.");
         survey14.setType(Type.FIVE_BALL);
         survey14.setTitle("Pdp_programmasi_baxolash ");
+        survey14.setInfo("\n1 – Juda ham yomon  \n2 – Yomon  \n3 – O’rtacha \n4 – Yaxshi \n5 – Juda ham yaxshi \n");
         surveyRepository.save(survey14);
 
 
@@ -156,6 +159,7 @@ public class Dataloder implements CommandLineRunner {
         survey15.setName("O’quv markazining sharoitlarini baholang.");
         survey15.setType(Type.FIVE_BALL);
         survey15.setTitle("Pdp_sharoiti_baxolash");
+        survey15.setInfo("\n1 – Juda ham yomon  \n2 – Yomon  \n3 – O’rtacha \n4 – Yaxshi \n5 – Juda ham yaxshi \n");
         surveyRepository.save(survey15);
 
         Survey survey16 = new Survey();
