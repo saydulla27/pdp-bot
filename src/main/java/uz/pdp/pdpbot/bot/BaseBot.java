@@ -6,18 +6,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import uz.pdp.pdpbot.controller.Resultcontroller;
 import uz.pdp.pdpbot.entity.*;
 import uz.pdp.pdpbot.repository.*;
 
@@ -57,9 +51,6 @@ public class BaseBot extends TelegramLongPollingBot {
 
     @Autowired
     AttachmentRepository attachmentRepository;
-
-    @Autowired
-    Resultcontroller resultcontroller;
 
 
     @Override
@@ -974,12 +965,19 @@ public class BaseBot extends TelegramLongPollingBot {
         }
     }
 
+
     public void SendResult(String group) {
         List<UserResoult> user_group_name = userResoultRepository.findAllByUser_Group_Name(group);
         String savol = "";
 
         for (UserResoult userResoult : user_group_name) {
             if (!savol.equals(userResoult.getSavol().getName())) {
+                int one = 0;
+                int two = 0;
+                int three = 0;
+                int four = 0;
+                int five = 0;
+
                 savol = userResoult.getSavol().getName();
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.
@@ -988,16 +986,40 @@ public class BaseBot extends TelegramLongPollingBot {
                         append("\n").
                         append("❓ " + "<b>" + userResoult.getSavol().getName() + "</b>").
                         append("\n");
+
+
                 List<UserResoult> savolName = userResoultRepository.findAllBySavol_Name(savol);
 
                 for (UserResoult resoult : savolName) {
                     String ball = resoult.getBall();
                     if (resoult.getUser().getGroup().getName().equals(group)) {
+                        if (resoult.getBall()!=null){
+                            switch (ball) {
+                                case "1":
+                                    one = one + 1;
+                                    break;
+                                case "2":
+                                    two = two + 1;
+                                    break;
+                                case "3":
+                                    three = three + 1;
+                                    break;
+                                case "4":
+                                    four = four + 1;
+                                    break;
+                                case "5":
+                                    five = five + 1;
+                                    break;
+
+                            }
+                        }
                         stringBuilder.
                                 append("\n").
                                 append("\uD83D\uDC68\u200D\uD83D\uDCBB " + resoult.getUser().getFullName() + "     \uD83D\uDCDE " + "+" + resoult.getUser().getPhoneNumber()).
                                 append("\n").
+                                append("\n").
                                 append("\uD83D\uDDE3" + resoult.getDescription()).
+                                append("\n").
                                 append("\n").
                                 append("\uD83D\uDCC8 " + ball).
                                 append("\n").
@@ -1006,6 +1028,22 @@ public class BaseBot extends TelegramLongPollingBot {
 
                     }
                 }
+                if (userResoult.getSavol().getType().equals(Type.FIVE_BALL)) {
+                    stringBuilder.
+                            append("\n").
+                            append("<b>Umumiy javoblar :</b>      " + (one+two+three+four+five) + "  ta talaba qatnashdi").
+                            append("\n").
+                            append("1) = " + one).
+                            append("\n").
+                            append("2) = " + two).
+                            append("\n").
+                            append("3) = " + three).
+                            append("\n").
+                            append("4) = " + four).
+                            append("\n").
+                            append("5) = " + five);
+                }
+
 
                 SendMessage sendMessage = new SendMessage();
                 sendMessage.setChatId((long) -764838797);
@@ -1020,7 +1058,6 @@ public class BaseBot extends TelegramLongPollingBot {
 
 
         }
-
 
     }
 
@@ -1037,4 +1074,7 @@ public class BaseBot extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+
+
 }
+
