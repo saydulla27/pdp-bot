@@ -4,11 +4,11 @@ package uz.pdp.pdpbot.component;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import uz.pdp.pdpbot.entity.*;
-import uz.pdp.pdpbot.repository.GroupRepository;
-import uz.pdp.pdpbot.repository.SurveyRepository;
-import uz.pdp.pdpbot.repository.UserRepository;
-import uz.pdp.pdpbot.repository.UserResoultRepository;
+import uz.pdp.pdpbot.entity.AgentPlane;
+import uz.pdp.pdpbot.entity.Regions;
+import uz.pdp.pdpbot.entity.Role;
+import uz.pdp.pdpbot.entity.User;
+import uz.pdp.pdpbot.repository.*;
 
 @Component
 public class Dataloder implements CommandLineRunner {
@@ -16,7 +16,7 @@ public class Dataloder implements CommandLineRunner {
     @Autowired
     UserRepository userRepository;
     @Autowired
-    GroupRepository groupRepository;
+    RegionsRepository regionsRepository;
 
     @Autowired
     SurveyRepository surveyRepository;
@@ -25,190 +25,152 @@ public class Dataloder implements CommandLineRunner {
     @Autowired
     UserResoultRepository userResoultRepository;
 
+    @Autowired
+    AgentHistoryRepository agentHistoryRepository;
+
+    @Autowired
+    AgentPlaneRepository agentPlaneRepository;
+
     @Override
     public void run(String... args) throws Exception {
 
+        Regions regions = new Regions();
+        regions.setRegionName("Zangata 1");
+        regions.setLocationName("Toshkent Shahri");
+        regions.setLat(41.333443);
+        regions.setLon(69.237656);
+        regionsRepository.save(regions);
 
-//        User student12 = new User();
-//        student12.setPhoneNumber("998917706311");
-//        student12.setRole(Role.ROLE_MANAGER);
-//        userRepository.save(student12);
+
+        User user1 = new User();
+        user1.setFullName("Iroda");
+        user1.setPhoneNumber("998917887252");
+        user1.setRole(Role.ROLE_AGENT);
+        user1.setRegions(regions);
+        user1.setOperatingModeON("09.00");
+        user1.setOperatingModeOFF("18.00");
+        user1.setBrand("Bella");
+        userRepository.save(user1);
+
+
+        User user2 = new User();
+        user2.setFullName("Sadi");
+        user2.setPhoneNumber("998917706311");
+        user2.setRole(Role.ROLE_AGENT);
+        user2.setRegions(regions);
+        user2.setOperatingModeON("09.00");
+        user2.setOperatingModeOFF("18.00");
+        user1.setBrand("Bella");
+        userRepository.save(user2);
+
+//        AgentHistory agentHistory = new AgentHistory();
+//        agentHistory.setDate("19-12-2021");
+//        agentHistory.setTimeON("09:00");
+//        agentHistory.setWorkTime(" 4 daqiqa ");
+//        agentHistory.setLateness("1 soat 2 min");
+//        agentHistory.setWorkShopSize("20");
+//        agentHistory.setUser(user2);
+//        agentHistoryRepository.save(agentHistory);
 //
-//        Group group = new Group();
-//        group.setName("g11");
-//        groupRepository.save(group);
-
-
-
-//        User student1 = new User();
-//        student1.setPhoneNumber("998338476311");
-//        student1.setRole(Role.ROLE_STUDENT);
-//        student1.setGroup(group);
-//        student1.setFullName("Saydulla");
-//        userRepository.save(student1);
 //
+//        AgentHistory agentHistory1 = new AgentHistory();
+//        agentHistory1.setDate("20-12-2021");
+//        agentHistory1.setTimeON("09:00");
+//        agentHistory1.setWorkTime(" 4 daqiqa ");
+//        agentHistory1.setLateness("1 soat 2 min");
+//        agentHistory1.setWorkShopSize("20");
+//        agentHistory1.setUser(user2);
+//        agentHistoryRepository.save(agentHistory1);
 //
-//        User student2 = new User();
-//        student2.setPhoneNumber("998330571996");
-//        student2.setRole(Role.ROLE_STUDENT);
-//        student2.setFullName("Abdulla");
-//        student2.setGroup(group);
-//        userRepository.save(student2);
-//
-//        User student3 = new User();
-//        student3.setPhoneNumber("998973451445");
-//        student3.setRole(Role.ROLE_STUDENT);
-//        student3.setGroup(group);
-//        userRepository.save(student3);
-//
-//        User student4 = new User();
-//        student4.setPhoneNumber("998996921836");
-//        student4.setRole(Role.ROLE_STUDENT);
-//        student4.setGroup(group);
-//        userRepository.save(student4);
-//
-//        User student5 = new User();
-//        student5.setPhoneNumber("998990674236");
-//        student5.setRole(Role.ROLE_STUDENT);
-//        student5.setGroup(group);
-//        userRepository.save(student5);
+//        AgentHistory agentHistory2 = new AgentHistory();
+//        agentHistory2.setDate("21-12-2021");
+//        agentHistory2.setTimeON("09:00");
+//        agentHistory2.setWorkTime(" 4 daqiqa ");
+//        agentHistory2.setLateness("1 soat 2 min");
+//        agentHistory2.setWorkShopSize("20");
+//        agentHistory2.setUser(user2);
+//        agentHistoryRepository.save(agentHistory2);
 
 
 
 
-        Survey survey = new Survey();
-        survey.setName("Agar PDP Academy o’quv markazi bo’lmaganida, o’qishingizni aynan qaysi o’quv markazida boshlagan bo’lar edingiz? ");
-        survey.setType(Type.STANDARD);
-        survey.setTitle("standart");
-        surveyRepository.save(survey);
+        User user3 = new User();
+        user3.setFullName("???");
+        user3.setPhoneNumber("998988887337");
+        user3.setRole(Role.ROLE_AGENT);
+        user3.setRegions(regions);
+        user3.setOperatingModeON("09.00");
+        user3.setOperatingModeOFF("18.00");
+        user3.setBrand("Bella");
+        userRepository.save(user3);
 
-        Survey survey1 = new Survey();
-        survey1.setName("PDP Academy ni tanlashingizning asosiy sabablarini yozib bera olasizmi? ");
-        survey1.setType(Type.STANDARD);
-        surveyRepository.save(survey1);
+        User dokon = new User();
+        dokon.setShopOrienter("keles");
+        dokon.setNameShop("Abdulla ota");
+        dokon.setPhoneNumber("998330571996");
+        dokon.setRole(Role.ROLE_SHOP);
+        dokon.setRegions(regions);
+        dokon.setDayRegion("111");
+        dokon.setLat(41.48986);
+        dokon.setLon(69.57755);
+        userRepository.save(dokon);
 
-        Survey survey2 = new Survey();
-        survey2.setName("Bo’sh vaqtingizda dasturlashdan tashqari nimalar bilan shug’ullanishni yaxshi ko’rasiz? (xobbi va qiziqishlaringiz)");
-        survey2.setType(Type.STANDARD);
-        surveyRepository.save(survey2);
+        User dokon5 = new User();
+        dokon5.setFullName("Boxodir");
+        dokon5.setPhoneNumber("998977052400");
+        dokon5.setRole(Role.ROLE_AGENT);
+        dokon5.setRegions(regions);
+        dokon5.setOperatingModeON("09.00");
+        dokon5.setOperatingModeOFF("18.00");
+        userRepository.save(dokon5);
 
+        User dokon1 = new User();
+        dokon1.setShopOrienter("keles pasi");
+        dokon1.setNameShop("Anvar ota");
+        dokon1.setPhoneNumber("998917776677");
+        dokon1.setRole(Role.ROLE_SHOP);
+        dokon1.setRegions(regions);
+        dokon1.setDayRegion("111");
+        dokon1.setLat(41.48986);
+        dokon1.setLon(69.57755);
+        userRepository.save(dokon1);
 
-        Survey survey4 = new Survey();
-        survey4.setName(" 1. Ro'yxatdan o'tish  ( Reception ) ");
-        survey4.setType(Type.STANDARD);
-        surveyRepository.save(survey4);
+        User dokon2 = new User();
+        dokon2.setShopOrienter("minvada");
+        dokon2.setNameShop("Toxirov Nodir");
+        dokon2.setPhoneNumber("998936667788");
+        dokon2.setRole(Role.ROLE_SHOP);
+        dokon2.setRegions(regions);
+        dokon2.setDayRegion("222");
+        dokon2.setLat(41.48986);
+        dokon2.setLon(69.57755);
+        userRepository.save(dokon2);
 
-        Survey survey5 = new Survey();
-        survey5.setName(" 2. Aloqa bo'limi (Call-center)");
-        survey5.setType(Type.STANDARD);
-        surveyRepository.save(survey5);
-
-        Survey survey6 = new Survey();
-        survey6.setName(" 3. Kassa");
-        survey6.setType(Type.STANDARD);
-        surveyRepository.save(survey6);
-
-        Survey survey7 = new Survey();
-        survey7.setName(" 4. Tadbirlar");
-        survey7.setType(Type.STANDARD);
-        surveyRepository.save(survey7);
-
-        Survey survey8 = new Survey();
-        survey8.setName(" 5. Texnik ta’minot (Wifi va h.k)");
-        survey8.setType(Type.STANDARD);
-        surveyRepository.save(survey8);
-
-        Survey survey9 = new Survey();
-        survey9.setName("O'quv markazini tanishlaringizga tavsiya qilishingiz ehtimoli qanchalik  yuqori ?");
-        survey9.setType(Type.STANDARD);
-        surveyRepository.save(survey9);
-
-        Survey survey10 = new Survey();
-        survey10.setName("PDP Academy nimani o’zgartirishi kerak deb o’ylaysiz?");
-        survey10.setType(Type.STANDARD);
-        surveyRepository.save(survey10);
-
-        Survey survey11 = new Survey();
-        survey11.setName("PDP Academy’da hech qachon o’zgarmasligi kerak bo’lgan bitta xususiyatni yozib qoldiring");
-        survey11.setType(Type.STANDARD);
-        surveyRepository.save(survey11);
-
-        Survey survey12 = new Survey();
-        survey12.setName("Mentoringizning dars bo'yicha bilim darajasini baholang.");
-        survey12.setType(Type.FIVE_BALL);
-        survey12.setTitle("Mentor_darsini_baxolash");
-        survey12.setInfo("\n1 – Bilimlari yetarli emas \n2 – Bilimlari pastroq \n3 – Bilimlari o’rta darajada \n4 – Bilimlari yetarli \n5 – Bilimlari juda ham kuchli \n");
-        surveyRepository.save(survey12);
-
-        Survey survey13 = new Survey();
-        survey13.setName("Mentoringizning tushuntirib bera olish darajasini baholang.");
-        survey13.setType(Type.FIVE_BALL);
-        survey13.setTitle("Mentor_tushuntirishini_baxolash");
-        survey13.setInfo("\n1 – Umuman tushuntirib bera olmaydilar  \n2 – Tushuntirib berishga qiynaladilar \n3 – O’rtacha darajada tushuntirib bera oladilar \n4 – Yaxshi tushuntirib bera oladilar \n5 – Juda yaxshi tushuntirib beraoladi \n");
-        surveyRepository.save(survey13);
-
-        Survey survey14 = new Survey();
-        survey14.setName("O’quv programmasidagi berilgan ma’lumotlarnig foydalilik va tushunarlilik darajasini baholang.");
-        survey14.setType(Type.FIVE_BALL);
-        survey14.setTitle("Pdp_programmasi_baxolash ");
-        survey14.setInfo("\n1 – Juda ham yomon  \n2 – Yomon  \n3 – O’rtacha \n4 – Yaxshi \n5 – Juda ham yaxshi \n");
-        surveyRepository.save(survey14);
+        User dokon3 = new User();
+        dokon3.setShopOrienter("chala qozo");
+        dokon3.setNameShop("Abdullaeva A");
+        dokon3.setPhoneNumber("998947896621");
+        dokon3.setRole(Role.ROLE_SHOP);
+        dokon3.setRegions(regions);
+        dokon3.setDayRegion("333");
+        dokon3.setLat(41.48986);
+        dokon3.setLon(69.57755);
+        userRepository.save(dokon3);
 
 
-        Survey survey15 = new Survey();
-        survey15.setName("O’quv markazining sharoitlarini baholang.");
-        survey15.setType(Type.FIVE_BALL);
-        survey15.setTitle("Pdp_sharoiti_baxolash");
-        survey15.setInfo("\n1 – Juda ham yomon  \n2 – Yomon  \n3 – O’rtacha \n4 – Yaxshi \n5 – Juda ham yaxshi \n");
-        surveyRepository.save(survey15);
+        AgentPlane agentPlane = new AgentPlane();
+        agentPlane.setTitle("supervisor yozadi planlarni");
+        agentPlane.setMoonYear("19-12-2021");
+        agentPlane.setUser(user2);
+        agentPlaneRepository.save(agentPlane);
 
-        Survey survey16 = new Survey();
-        survey16.setName("O'quv markazini tanishlaringizga tavsiya qilishingiz ehtimoli qanchalik yuqori ? ");
-        survey16.setType(Type.FIVE_BALL);
-        survey16.setTitle("Pdp_tavsiya_ehtimoli");
-        surveyRepository.save(survey16);
-
-
-        Survey survey17 = new Survey();
-        survey17.setName("PDP Academy nimani o’zgartirishi kerak ?");
-        survey17.setType(Type.COMMIT);
-        survey17.setTitle("Pdp_nimani_ozgartirishi");
-        surveyRepository.save(survey17);
-
-
-//        UserResoult userResoult =  new UserResoult();
-//        userResoult.setUser(student1);
-//        userResoult.setBall("1");
-//        userResoult.setSavol(survey12);
-//        userResoultRepository.save(userResoult);
-//
-//        UserResoult userResoult1 =  new UserResoult();
-//        userResoult1.setUser(student2);
-//        userResoult1.setDescription("asus");
-//        userResoult1.setSavol(survey12);
-//        userResoult1.setBall("1");
-//        userResoultRepository.save(userResoult1);
-//
-//        UserResoult userResoult2 =  new UserResoult();
-//        userResoult2.setUser(student3);
-//        userResoult2.setBall("2");
-//        userResoult2.setSavol(survey12);
-//        userResoultRepository.save(userResoult2);
-//
-//        UserResoult userResoult3 =  new UserResoult();
-//        userResoult3.setUser(student4);
-//        userResoult3.setBall("1");
-//        userResoult3.setSavol(survey12);
-//        userResoultRepository.save(userResoult3);
-//
-//        UserResoult userResoult4 =  new UserResoult();
-//        userResoult4.setUser(student5);
-//        userResoult4.setBall("2");
-//        userResoult4.setSavol(survey12);
-//        userResoultRepository.save(userResoult4);
 
 
     }
 
 
 }
+
+
+
+

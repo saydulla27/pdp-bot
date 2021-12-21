@@ -2,5 +2,14 @@ package uz.pdp.pdpbot.entity;
 
 
 public enum Role {
-    ROlE_ADMIN, ROLE_USER, ROLE_SUPER_ADMIN,ROLE_MANAGER,ROLE_STUDENT
+    ROlE_DIRECTOR,
+    ROLE_USER,
+    ROLE_SUPERVISOR,
+    ROLE_MANAGER,
+    ROLE_OPERATOR,
+    ROLE_AGENT,
+    ROLE_SHOP,
+    ROLE_WAN,
+    ROLE_WAREHOUSE
+
 }

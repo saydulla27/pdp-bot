@@ -1,7 +1,6 @@
 package uz.pdp.pdpbot.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,8 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 
-@Entity(name = "groups")
-public class Group {
+@Entity(name = "phone")
+public class SubPhone {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +21,9 @@ public class Group {
     private String name;
     private Long buffer;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "group",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List <User> students;
+
+    @OneToMany(mappedBy = "subPhone",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List <User> users;
 
 
 }
