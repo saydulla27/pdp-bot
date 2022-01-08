@@ -1218,13 +1218,15 @@ public class BaseBot extends TelegramLongPollingBot {
         inlineKeyboardButton.setText("1").setCallbackData(user.getId() + "1");
         inlineKeyboardButton1.setText("2").setCallbackData(user.getId() + "2");
         inlineKeyboardButton2.setText("3").setCallbackData(user.getId() + "3");
-        inlineKeyboardButton2.setText("4").setCallbackData(user.getId() + "4");
-        inlineKeyboardButton2.setText("5").setCallbackData(user.getId() + "5");
+        inlineKeyboardButton3.setText("4").setCallbackData(user.getId() + "4");
+        inlineKeyboardButton4.setText("5").setCallbackData(user.getId() + "5");
         inlineKeyboardButton5.setText("Bu agent kirmadi").setCallbackData(user.getId() + "x");
         keyboardRows.add(inlineKeyboardButton);
         keyboardRows.add(inlineKeyboardButton1);
         keyboardRows.add(inlineKeyboardButton2);
-        keyboardRows1.add(inlineKeyboardButton3);
+        keyboardRows.add(inlineKeyboardButton3);
+        keyboardRows.add(inlineKeyboardButton4);
+        keyboardRows1.add(inlineKeyboardButton5);
         rowList.add(keyboardRows);
         rowList.add(keyboardRows1);
 
