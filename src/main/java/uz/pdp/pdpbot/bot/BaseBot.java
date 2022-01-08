@@ -19,6 +19,7 @@ import uz.pdp.pdpbot.entity.*;
 import uz.pdp.pdpbot.model.Response;
 import uz.pdp.pdpbot.model.WeatherItem;
 import uz.pdp.pdpbot.repository.*;
+import uz.pdp.pdpbot.valyutaModel.CurrencyUtil;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -37,7 +38,7 @@ public class BaseBot extends TelegramLongPollingBot {
 
     private Long userChatId;
     private String userMessage;
-
+    public Currency kurs = null;
 
     @Autowired
     AgentPlaneRepository agentPlaneRepository;
@@ -51,8 +52,7 @@ public class BaseBot extends TelegramLongPollingBot {
     SurveyRepository surveyRepository;
     @Autowired
     UserResoultRepository userResoultRepository;
-    @Autowired
-    AttachmentRepository attachmentRepository;
+
     @Autowired
     AgentWorkShopRepository agentWorkShopRepository;
     @Autowired
@@ -565,10 +565,10 @@ public class BaseBot extends TelegramLongPollingBot {
                                 break;
 
                             case State.MENU_SHOP:
-
                                 switch (text) {
                                     case Constant.KURS:
-                                        userMessage = "";
+                                        getKurs();
+                                        userMessage = "Xayrli kun";
                                         execute(userServiceBot.menu_shop(), null);
                                         break;
                                     case Constant.POGODA:
@@ -716,6 +716,7 @@ public class BaseBot extends TelegramLongPollingBot {
                 }
             }
             if (update.getMessage().hasLocation()) {
+                userChatId = update.getMessage().getChatId();
                 Float lat = update.getMessage().getLocation().getLatitude();
                 Float lot = update.getMessage().getLocation().getLongitude();
                 Optional<User> byChatId = userRepository.findByChatId(userChatId);
@@ -754,6 +755,8 @@ public class BaseBot extends TelegramLongPollingBot {
                         System.out.println(locationName);
                         execute(userServiceBot.Start_AgentON(), null);
                         break;
+
+
                     case State.AGENT_ON:
                         Optional<AgentHistory> history = agentHistoryRepository.findByBuffer(userChatId);
                         List<AgentWorkShop> yes = agentWorkShopRepository.findByUserAndDateAndSell(user, strDate, true);
@@ -853,8 +856,7 @@ public class BaseBot extends TelegramLongPollingBot {
                 case State.A_FIND_ADD_1:
                     String id = (call_data.substring(0, call_data.length() - 1));
                     String data = call_data.substring(call_data.length() - 1);
-                    call_data = data;
-                    switch (call_data) {
+                    switch (data) {
                         case "b":
                             user.setState(State.AGENT_ON);
                             userRepository.save(user);
@@ -873,7 +875,7 @@ public class BaseBot extends TelegramLongPollingBot {
                             agentWorkShopRepository.save(agentWorkShop);
                             user.setState(State.A_FIND_ADD);
                             userRepository.save(user);
-                            backRemove("Zakaz olindi", message_id);
+                            orderOk(user, "zakaz olindi", message_id, byId.get().getChatId());
                             userMessage = "Do`konni toping : \uD83D\uDD0D";
                             execute(userServiceBot.back(), null);
                             break;
@@ -888,11 +890,25 @@ public class BaseBot extends TelegramLongPollingBot {
                             agentWorkShopRepository.save(agentWorkShop1);
                             user.setState(State.A_FIND_ADD);
                             userRepository.save(user);
-                            backRemove("Zakaz yo`q", message_id);
+                            orderOk(user, "zakaz yo`q", message_id, byId1.get().getChatId());
                             userMessage = "Do`konni toping : \uD83D\uDD0D";
                             execute(userServiceBot.back(), null);
                             break;
-
+                    }
+                    break;
+                case State.MENU_SHOP:
+                    String idAgent = (call_data.substring(0, call_data.length() - 1));
+                    String dataResult = call_data.substring(call_data.length() - 1);
+                    if (!call_data.isEmpty()) {
+                        Optional<User> AgentId = userRepository.findById(Integer.valueOf(idAgent));
+                        UserResoult userResoult = new UserResoult();
+                        userResoult.setBall(dataResult);
+                        userResoult.setUser(AgentId.get());
+                        userResoult.setDate(strDate);
+                        userResoult.setShop(user.getNameShop());
+                        userResoultRepository.save(userResoult);
+                        backRemove("Javobingiz uchun raxmat", message_id);
+                        break;
                     }
 
                     break;
@@ -1048,32 +1064,34 @@ public class BaseBot extends TelegramLongPollingBot {
     }
 
     private void send_work_list(User user, String date) {
+        StringBuilder stringBuilder = new StringBuilder();
         List<AgentWorkShop> sellYes = agentWorkShopRepository.findByUserAndDateAndSell(user, date, true);
         List<AgentWorkShop> sellNo = agentWorkShopRepository.findByUserAndDateAndSell(user, date, false);
         Optional<AgentHistory> history = agentHistoryRepository.findByUserAndDate(user, date);
-        TimeControl timeControl1 = userServiceBot.WorkTime(history.get().getTimeON());
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder
-                .append("✳️<b>Bugungi ish haqida</b>  " + date)
-                .append("\n")
-                .append("\nZakaz berganlar <b>" + sellYes.size() + "</b> ta do`kon");
+        if (history.isPresent()) {
+            TimeControl timeControl1 = userServiceBot.WorkTime(history.get().getTimeON());
+            stringBuilder
+                    .append("✳️<b>Bugungi ish haqida</b>  " + date)
+                    .append("\n")
+                    .append("\nZakaz berganlar <b>" + sellYes.size() + "</b> ta do`kon");
 
-        for (AgentWorkShop sellYe : sellYes) {
-            stringBuilder.append("\n\uD83D\uDED2 <i>" + sellYe.getShop() + "</i>   vaqti = " + sellYe.getTime() + " ✅");
-        }
-        stringBuilder
-                .append("\n")
-                .append("\n")
-                .append("Zakaz bermagan dokonlar " + sellNo.size() + " ta dokon");
+            for (AgentWorkShop sellYe : sellYes) {
+                stringBuilder.append("\n\uD83D\uDED2 <i>" + sellYe.getShop() + "</i>   vaqti = " + sellYe.getTime() + " ✅");
+            }
+            stringBuilder
+                    .append("\n")
+                    .append("\n")
+                    .append("Zakaz bermagan dokonlar " + sellNo.size() + " ta dokon");
 
-        for (AgentWorkShop sellNoo : sellNo) {
-            stringBuilder.append("\n\uD83D\uDED2 <i>" + sellNoo.getShop() + "</i>   vaqti = " + sellNoo.getTime() + " ❎");
-        }
+            for (AgentWorkShop sellNoo : sellNo) {
+                stringBuilder.append("\n\uD83D\uDED2 <i>" + sellNoo.getShop() + "</i>   vaqti = " + sellNoo.getTime() + " ❎");
+            }
 
-        stringBuilder
-                .append("\n")
-                .append("\n♻️Xozirgi vaqtda " + "\n\uD83D\uDD50 " + timeControl1.getTimeOf() + " ichida  <b>" + (sellNo.size() + sellYes.size()) + "</b> ta dokonga kirdingiz")
-                .append("\n");
+            stringBuilder
+                    .append("\n")
+                    .append("\n♻️Xozirgi vaqtda " + "\n\uD83D\uDD50 " + timeControl1.getTimeOf() + " ichida  <b>" + (sellNo.size() + sellYes.size()) + "</b> ta dokonga kirdingiz")
+                    .append("\n");
+        } else stringBuilder.append("xali iwlamadingiz");
 
 
         SendMessage sendMessage = new SendMessage();
@@ -1165,6 +1183,62 @@ public class BaseBot extends TelegramLongPollingBot {
         }
     }
 
+    private void orderOk(User user, String message, Long message_id, Long sendChatId) {
+
+        EditMessageText new_message = new EditMessageText()
+                .setChatId(userChatId)
+                .setMessageId(Math.toIntExact(message_id))
+                .setText(message);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder
+                .append("<b>Assalom aleykum</b> ")
+                .append("\nBugun sizning dokoningizga bizning savdo agentimiz " + user.getFullName() + " tashrif buyurdi iltimos hizmatini baholab bering javobingiz biz uchun muhim  ")
+                .append("\nAgar shikoyatlaringiz bo`lsa <b>shikoyatlar</b> bo`limidan yozing");
+
+
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setParseMode("HTML");
+        sendMessage.setChatId(sendChatId);
+        sendMessage.setText(String.valueOf(stringBuilder));
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardRows = new ArrayList<>();
+        List<InlineKeyboardButton> keyboardRows1 = new ArrayList<>();
+
+
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton1 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton2 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton3 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton4 = new InlineKeyboardButton();
+        InlineKeyboardButton inlineKeyboardButton5 = new InlineKeyboardButton();
+
+        inlineKeyboardButton.setText("1").setCallbackData(user.getId() + "1");
+        inlineKeyboardButton1.setText("2").setCallbackData(user.getId() + "2");
+        inlineKeyboardButton2.setText("3").setCallbackData(user.getId() + "3");
+        inlineKeyboardButton2.setText("4").setCallbackData(user.getId() + "4");
+        inlineKeyboardButton2.setText("5").setCallbackData(user.getId() + "5");
+        inlineKeyboardButton5.setText("Bu agent kirmadi").setCallbackData(user.getId() + "x");
+        keyboardRows.add(inlineKeyboardButton);
+        keyboardRows.add(inlineKeyboardButton1);
+        keyboardRows.add(inlineKeyboardButton2);
+        keyboardRows1.add(inlineKeyboardButton3);
+        rowList.add(keyboardRows);
+        rowList.add(keyboardRows1);
+
+        inlineKeyboardMarkup.setKeyboard(rowList);
+        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
+
+        try {
+            execute(sendMessage);
+            execute(new_message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void send_find(Integer call_data, Long message_id) {
         Optional<User> name_shop = userRepository.findById(call_data);
         StringBuilder stringBuilder = new StringBuilder();
@@ -1242,6 +1316,7 @@ public class BaseBot extends TelegramLongPollingBot {
 
         SendMessage sendMessage = new SendMessage()
                 .setChatId(userChatId);
+        sendMessage.setParseMode("HTML");
 
         Response response = userServiceBot.getWeatherFromLocation(lat, lot);
 
@@ -1280,14 +1355,17 @@ public class BaseBot extends TelegramLongPollingBot {
             case "smoke":
                 malumot = "\uD83C\uDF2B,  Tumanli";
                 break;
+            default:
+                malumot = "\uD83C\uDF08 O`zgaruvchan ";
+                break;
         }
         System.out.println(icon);
         StringBuilder stringBuilder = new StringBuilder();
         double gradus = response.getMain().getTemp() - 273;
         stringBuilder
-                .append("      << Bugun  " + str + " >>")
+                .append("<b>Bugun</b>" + "  <b>" + str + "</b>")
                 .append("\n" + response.getName() + " da ")
-                .append("\nHavo harorati " + Math.ceil(gradus) + "° " + malumot)
+                .append("\nHavo harorati " + Math.ceil(gradus) + "° " + "\n" + malumot)
                 .append("\n")
                 .append("Nimadir");
 
@@ -1301,4 +1379,34 @@ public class BaseBot extends TelegramLongPollingBot {
     }
 
 
+    public void getKurs() throws IOException {
+        SendMessage sendMessage = new SendMessage()
+                .setChatId(userChatId);
+
+        uz.pdp.pdpbot.valyutaModel.Currency oneInfo = CurrencyUtil.getOneOfInfo("USD");
+        uz.pdp.pdpbot.valyutaModel.Currency oneInfo1 = CurrencyUtil.getOneOfInfo("EUR");
+        uz.pdp.pdpbot.valyutaModel.Currency oneInfo2 = CurrencyUtil.getOneOfInfo("RUB");
+
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder
+                .append("Bugungi valyuta kursi " + oneInfo.getDate()).append("\n")
+                .append("\n\uD83C\uDDFA\uD83C\uDDF8 1 " + oneInfo.getCcyNm_EN() + " = " + oneInfo.getRate() + " sum")
+                .append("\n\uD83C\uDDEA\uD83C\uDDFA 1 " + oneInfo1.getCcyNm_EN() + " = " + oneInfo1.getRate() + " sum")
+                .append("\n\uD83C\uDDF7\uD83C\uDDFA 1 " + oneInfo2.getCcyNm_EN() + " = " + oneInfo2.getRate() + " sum")
+                .append("\n");
+
+        sendMessage.setText(String.valueOf(stringBuilder));
+        try {
+            execute(sendMessage);
+
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 }
+

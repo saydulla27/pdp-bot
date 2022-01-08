@@ -16,12 +16,12 @@ public class UserResoult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
+    private String date;
     private String Ball;
-    private String description;
+    private String shop;
     private long buffer;
-    @ManyToOne
-    private Survey savol;
+
+
 
     @ManyToOne
     private User user;

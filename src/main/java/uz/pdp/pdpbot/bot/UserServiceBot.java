@@ -492,19 +492,18 @@ public class UserServiceBot {
         return replyKeyboardMarkup;
     }
 
-    public Currency[] getOneInfo(String valyuta) throws IOException, IOException {
+    public static Currency getOneOfInfo() throws IOException {
         Gson gson = new Gson();
         LocalDate localDate = LocalDate.now();
-        URL url = new URL("https://cbu.uz/oz/arkhiv-kursov-valyut/json/" + valyuta + "/" + localDate + "/");
-
+        URL url = new URL("https://cbu.uz/oz/arkhiv-kursov-valyut/json/" + "USD" + "/" + localDate + "/");
 
         URLConnection connection = url.openConnection();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
-        Currency[] currencies = gson.fromJson(reader, Currency[].class);
+        Currency[] currencies = gson.fromJson(bufferedReader, Currency[].class);
 
         //OneCurrencyItem
-        return currencies;
+        return currencies[0];
     }
 
 

@@ -63,6 +63,17 @@ public class Dataloder implements CommandLineRunner {
         user1.setBrand("Bella");
         userRepository.save(user2);
 
+
+        User user8 = new User();
+        user8.setFullName("asdad");
+        user8.setPhoneNumber("998881784777");
+        user8.setRole(Role.ROLE_AGENT);
+        user8.setRegions(regions);
+        user8.setOperatingModeON("09.00");
+        user8.setOperatingModeOFF("18.00");
+        user8.setBrand("Bella");
+        userRepository.save(user8);
+
 //        AgentHistory agentHistory = new AgentHistory();
 //        agentHistory.setDate("19-12-2021");
 //        agentHistory.setTimeON("09:00");
@@ -104,16 +115,7 @@ public class Dataloder implements CommandLineRunner {
         user3.setBrand("Bella");
         userRepository.save(user3);
 
-        User dokon = new User();
-        dokon.setShopOrienter("keles");
-        dokon.setNameShop("Abdulla ota");
-        dokon.setPhoneNumber("998330571996");
-        dokon.setRole(Role.ROLE_SHOP);
-        dokon.setRegions(regions);
-        dokon.setDayRegion("111");
-        dokon.setLat(41.48986);
-        dokon.setLon(69.57755);
-        userRepository.save(dokon);
+
 
         User dokon5 = new User();
         dokon5.setFullName("Boxodir");

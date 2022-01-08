@@ -6,29 +6,13 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.multipart.MultipartFile;
-import org.telegram.telegrambots.meta.api.methods.GetFile;
-import uz.pdp.pdpbot.entity.Attachment;
 import uz.pdp.pdpbot.entity.UserResoult;
-import uz.pdp.pdpbot.repository.AttachmentRepository;
 
-import javax.activation.FileDataSource;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Iterator;
 import java.util.List;
 
 public class Excell {
 
-    @Autowired
-    AttachmentRepository attachmentRepository;
+
 
 
     private XSSFWorkbook workbook = new XSSFWorkbook();
@@ -72,40 +56,40 @@ public class Excell {
         cell.setCellStyle(style);
     }
 
-    private void writeDataLines() {
+//    private void writeDataLines() {
+//
+//
+//        int rowCount = 1;
+//
+//        CellStyle style = workbook.createCellStyle();
+//        XSSFFont font = workbook.createFont();
+//        font.setFontHeight(14);
+//        style.setFont(font);
+//
+//        for (UserResoult user : listUsers) {
+//            Row row = sheet.createRow(rowCount++);
+//            int columnCount = 0;
+//
+//            createCell(row, columnCount++, user.getSavol().getName(), style);
+//            createCell(row, columnCount++, user.getBall(), style);
+//            createCell(row, columnCount++, user.getDescription(), style);
+//            createCell(row, columnCount++, user.getUser().getFullName(), style);
+//            createCell(row, columnCount++, user.getUser().getPhoneNumber(), style);
+//
+//        }
+//    }
 
-
-        int rowCount = 1;
-
-        CellStyle style = workbook.createCellStyle();
-        XSSFFont font = workbook.createFont();
-        font.setFontHeight(14);
-        style.setFont(font);
-
-        for (UserResoult user : listUsers) {
-            Row row = sheet.createRow(rowCount++);
-            int columnCount = 0;
-
-            createCell(row, columnCount++, user.getSavol().getName(), style);
-            createCell(row, columnCount++, user.getBall(), style);
-            createCell(row, columnCount++, user.getDescription(), style);
-            createCell(row, columnCount++, user.getUser().getFullName(), style);
-            createCell(row, columnCount++, user.getUser().getPhoneNumber(), style);
-
-        }
-    }
-
-    public void export(String a) throws IOException {
-        writeHeaderLine();
-        writeDataLines();
-
-        File compressFile = null;
-        File file = new File(a + ".xlsx");
-        OutputStream outputStream = new FileOutputStream(file);
-        workbook.write(outputStream);
-        outputStream.close();
-
-    }
+//    public void export(String a) throws IOException {
+//        writeHeaderLine();
+//        writeDataLines();
+//
+//        File compressFile = null;
+//        File file = new File(a + ".xlsx");
+//        OutputStream outputStream = new FileOutputStream(file);
+//        workbook.write(outputStream);
+//        outputStream.close();
+//
+//    }
 
 
 }
